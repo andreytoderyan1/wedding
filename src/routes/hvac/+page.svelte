@@ -189,8 +189,8 @@
 			/>
 			<div class="absolute inset-0 bg-linear-to-b from-black/20 via-black/10 to-white/60"></div>
 		</div>
-		<div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-			<div class="rounded-3xl bg-white/80 backdrop-blur-md p-8 shadow-2xl sm:p-12">
+		<div class="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+			<div class="rounded-2xl bg-white/70 backdrop-blur-sm p-6 shadow-xl sm:p-8">
 				<div class="text-center">
 					<div class="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 shadow-lg">
 						<Star class="h-4 w-4 fill-yellow-400 text-yellow-400" />
