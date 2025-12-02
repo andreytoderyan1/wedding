@@ -422,8 +422,8 @@
 				<p class="mb-8 text-xl text-blue-100">
 					Get a free estimate from qualified HVAC contractors in your area today.
 				</p>
-				<div class="mx-auto max-w-md">
-					<div class="flex gap-3">
+				<div class="mx-auto max-w-md justify-center">
+					<div class="flex gap-1">
 						<input
 							type="text"
 							placeholder="Enter ZIP code"
@@ -434,9 +434,10 @@
 						/>
 						<button
 							onclick={getFreeEstimate}
-							class="rounded-xl bg-gray-900 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-gray-800 hover:scale-105"
+							class="flex flex-col items-center justify-center rounded-xl bg-slate-900 px-6 py-4 text-sm font-semibold text-white shadow-lg transition-all hover:bg-slate-800 hover:scale-105 leading-tight"
 						>
-							Get Quote
+							<span>Get</span>
+							<span>Quote</span>
 						</button>
 					</div>
 				</div>
