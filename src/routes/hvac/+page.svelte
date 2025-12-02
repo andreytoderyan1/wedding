@@ -181,69 +181,69 @@
 	<!-- Minimalist Hero Section -->
 	<section class="relative overflow-hidden bg-linear-to-b from-white via-blue-50/30 to-white py-24 lg:py-32">
 		<!-- Background Image -->
-		<div class="absolute inset-0 -z-10">
+		<div class="absolute inset-0">
 			<img
-				src="/home.jpg"
+				src="/home2.jpg"
 				alt="Modern Home HVAC System"
-				class="h-full w-full object-cover opacity-20"
+				class="h-full w-full object-cover opacity-100"
 			/>
-			<div class="absolute inset-0 bg-linear-to-b from-white/90 via-blue-50/30 to-white/90"></div>
-			<div class="absolute top-0 right-0 h-96 w-96 rounded-full bg-blue-100/50 blur-3xl"></div>
-			<div class="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-cyan-100/50 blur-3xl"></div>
+			<div class="absolute inset-0 bg-linear-to-b from-black/20 via-black/10 to-white/60"></div>
 		</div>
 		<div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-			<div class="text-center">
-				<div class="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700">
-					<Star class="h-4 w-4 fill-yellow-400 text-yellow-400" />
-					<span>Trusted HVAC Professionals</span>
-				</div>
-				<h1 class="mb-6 text-5xl font-extrabold leading-tight text-gray-900 sm:text-6xl lg:text-7xl">
-					Expert HVAC Services
-					<br />
-					<span class="text-blue-600">For Your Home</span>
-				</h1>
-				<p class="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-gray-600">
-					Keep your home comfortable year-round with professional heating, cooling, and air quality solutions. 
-					24/7 emergency service available.
-				</p>
-				
-				<!-- Quick CTA -->
-				<div class="mx-auto mb-12 max-w-lg">
-					<div class="flex flex-col gap-4 sm:flex-row">
-						<input
-							type="text"
-							placeholder="Enter your ZIP code"
-							class="flex-1 rounded-xl border-2 border-gray-200 bg-white px-6 py-4 text-lg text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
-							value={zipCode}
-							oninput={handleZipChange}
-							maxlength="5"
-						/>
-						<button
-							onclick={getFreeEstimate}
-							class="group flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-105"
-						>
-							Get Free Quote
-							<ArrowRight class="h-5 w-5 transition-transform group-hover:translate-x-1" />
-						</button>
+			<div class="rounded-3xl bg-white/80 backdrop-blur-md p-8 shadow-2xl sm:p-12">
+				<div class="text-center">
+					<div class="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 shadow-lg">
+						<Star class="h-4 w-4 fill-yellow-400 text-yellow-400" />
+						<span>Trusted HVAC Professionals</span>
 					</div>
-					<p class="mt-4 text-sm text-gray-500">
-						Free estimates • No obligation • Licensed professionals
+					<h1 class="mb-6 text-5xl font-extrabold leading-tight text-gray-900 sm:text-6xl lg:text-7xl">
+						Expert HVAC Services
+						<br />
+						<span class="text-blue-600">For Your Home</span>
+					</h1>
+					<p class="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-gray-700">
+						Keep your home comfortable year-round with professional heating, cooling, and air quality solutions. 
+						24/7 emergency service available.
 					</p>
-				</div>
+					
+					<!-- Quick CTA -->
+					<div class="mx-auto mb-12 max-w-lg">
+						<div class="flex flex-col gap-4 sm:flex-row">
+							<input
+								type="text"
+								placeholder="Enter your ZIP code"
+								class="flex-1 rounded-xl border-2 border-gray-200 bg-white px-6 py-4 text-lg text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+								value={zipCode}
+								oninput={handleZipChange}
+								maxlength="5"
+							/>
+							<button
+								onclick={getFreeEstimate}
+								class="group flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-105"
+							>
+								Get Free Quote
+								<ArrowRight class="h-5 w-5 transition-transform group-hover:translate-x-1" />
+							</button>
+						</div>
+						<p class="mt-4 text-sm text-gray-600">
+							Free estimates • No obligation • Licensed professionals
+						</p>
+					</div>
 
-				<!-- Trust Indicators -->
-				<div class="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600">
-					<div class="flex items-center gap-2">
-						<CheckCircle class="h-5 w-5 text-green-500" />
-						<span class="font-medium">Licensed & Insured</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<CheckCircle class="h-5 w-5 text-green-500" />
-						<span class="font-medium">15+ Years Experience</span>
-					</div>
-					<div class="flex items-center gap-2">
-						<CheckCircle class="h-5 w-5 text-green-500" />
-						<span class="font-medium">4.9★ Average Rating</span>
+					<!-- Trust Indicators -->
+					<div class="flex flex-wrap items-center justify-center gap-8 text-sm">
+						<div class="flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 shadow-sm">
+							<CheckCircle class="h-5 w-5 text-green-600" />
+							<span class="font-medium text-gray-900">Licensed & Insured</span>
+						</div>
+						<div class="flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 shadow-sm">
+							<CheckCircle class="h-5 w-5 text-green-600" />
+							<span class="font-medium text-gray-900">15+ Years Experience</span>
+						</div>
+						<div class="flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 shadow-sm">
+							<CheckCircle class="h-5 w-5 text-green-600" />
+							<span class="font-medium text-gray-900">4.9★ Average Rating</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -287,31 +287,41 @@
 				{#each hvacServices as service}
 					{@const Icon = service.icon}
 					{@const isAC = service.title === 'AC Installation & Repair'}
+					{@const isHeating = service.title === 'Heating Systems'}
 					<div class="group relative overflow-hidden rounded-2xl border-2 {service.color} p-8 transition-all hover:shadow-xl hover:scale-[1.02]">
-						{#if isAC}
-							<div class="absolute inset-0 opacity-5">
-								<img
-									src="/service-ac-installation.webp"
-									alt="AC Installation"
-									class="h-full w-full object-cover"
-								/>
-							</div>
-						{/if}
-						<div class="relative mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm">
-							<Icon class="h-7 w-7 text-blue-600" />
+					{#if isAC}
+						<div class="absolute inset-0 opacity-5">
+							<img
+								src="/service-ac-installation.webp"
+								alt="AC Installation"
+								class="h-full w-full object-cover"
+							/>
 						</div>
-						<h3 class="mb-3 text-2xl font-bold text-gray-900">{service.title}</h3>
-						<p class="mb-6 text-gray-700">{service.description}</p>
-						<ul class="space-y-3">
-							{#each service.features as feature}
-								<li class="flex items-center gap-2 text-gray-700">
-									<CheckCircle class="h-5 w-5 shrink-0 text-green-500" />
-									<span>{feature}</span>
-								</li>
-							{/each}
-						</ul>
+					{/if}
+					{#if isHeating}
+						<div class="absolute inset-0 opacity-5">
+							<img
+								src="/heat-pump.jpg"
+								alt="Heating System"
+								class="h-full w-full object-cover"
+							/>
+						</div>
+					{/if}
+					<div class="relative mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-sm">
+						<Icon class="h-7 w-7 text-blue-600" />
 					</div>
-				{/each}
+					<h3 class="mb-3 text-2xl font-bold text-gray-900">{service.title}</h3>
+					<p class="mb-6 text-gray-700">{service.description}</p>
+					<ul class="space-y-3">
+						{#each service.features as feature}
+							<li class="flex items-center gap-2 text-gray-700">
+								<CheckCircle class="h-5 w-5 shrink-0 text-green-500" />
+								<span>{feature}</span>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/each}
 			</div>
 		</div>
 	</section>

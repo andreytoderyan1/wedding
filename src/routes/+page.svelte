@@ -142,7 +142,7 @@
 				alt="Professional HVAC Services"
 				class="h-full w-full object-cover"
 			/>
-			<div class="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/80"></div>
+			<div class="absolute inset-0 bg-gradient-to-br from-slate-900/20 via-slate-800/00 to-slate-900/30"></div>
 			<div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent)]"></div>
 		</div>
 		<div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -274,16 +274,26 @@
 				{#each services as service}
 					{@const Icon = service.icon}
 					{@const isAC = service.title === 'Air Conditioning'}
+					{@const isHeating = service.title === 'Heating Systems'}
 					<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 p-8 backdrop-blur-sm border border-slate-700/50 transition-all hover:border-slate-600 hover:shadow-2xl hover:shadow-blue-500/10">
-						{#if isAC}
-							<div class="absolute inset-0 opacity-10">
-								<img
-									src="/service-ac-installation.webp"
-									alt="AC Installation"
-									class="h-full w-full object-cover"
-								/>
-							</div>
-						{/if}
+					{#if isAC}
+						<div class="absolute inset-0 opacity-10">
+							<img
+								src="/service-ac-installation.webp"
+								alt="AC Installation"
+								class="h-full w-full object-cover"
+							/>
+						</div>
+					{/if}
+					{#if isHeating}
+						<div class="absolute inset-0 opacity-10">
+							<img
+								src="/heat-pump.jpg"
+								alt="Heating System"
+								class="h-full w-full object-cover"
+							/>
+						</div>
+					{/if}
 						<div class="absolute top-0 right-0 h-32 w-32 rounded-full bg-gradient-to-br {service.color} opacity-10 blur-2xl"></div>
 						<div class="relative">
 							<div class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br {service.color}">
