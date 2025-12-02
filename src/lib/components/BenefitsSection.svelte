@@ -28,9 +28,9 @@
 
 		<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 			{#each benefits as benefit}
+				{@const Icon = benefit.icon}
 				<div class="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-blue-300 hover:shadow-lg">
 					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
-						{@const Icon = benefit.icon}
 						<Icon class="h-6 w-6 text-blue-600" />
 					</div>
 					<h3 class="mb-2 text-xl font-bold text-slate-800">{benefit.title}</h3>

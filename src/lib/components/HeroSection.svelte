@@ -84,9 +84,9 @@
 					<h3 class="mb-6 text-2xl font-bold text-slate-800">Why Choose Us?</h3>
 					<div class="space-y-4">
 						{#each stats as stat}
+							{@const Icon = stat.icon}
 							<div class="flex items-center gap-4">
 								<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-									{@const Icon = stat.icon}
 									<Icon class="h-6 w-6 text-blue-600" />
 								</div>
 								<div>

@@ -8,6 +8,18 @@
 	}
 
 	let { zipCode, onZipChange, onGetEstimate }: Props = $props();
+	
+	let inputValue = $state('');
+	
+	$effect(() => {
+		inputValue = zipCode;
+	});
+	
+	const handleInput = (e: Event) => {
+		const value = (e.target as HTMLInputElement).value;
+		inputValue = value;
+		onZipChange(e);
+	};
 </script>
 
 <!-- Get Estimate Section -->
@@ -29,8 +41,8 @@
 							type="text"
 							placeholder="Enter ZIP code"
 							class="flex-1 rounded border border-slate-300 px-4 py-3 text-slate-800 focus:border-blue-500 focus:outline-none"
-							value={zipCode}
-							oninput={onZipChange}
+							bind:value={inputValue}
+							oninput={handleInput}
 							maxlength="5"
 						/>
 						<button

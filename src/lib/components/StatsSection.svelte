@@ -19,10 +19,10 @@
 	<div class="mx-auto max-w-7xl">
 		<div class="grid gap-8 text-center md:grid-cols-4">
 			{#each stats as stat}
+				{@const Icon = stat.icon}
 				<div class="rounded-xl bg-white/10 p-8 backdrop-blur-sm transition-transform hover:scale-105">
 					<div class="mb-4 flex justify-center">
 						<div class="flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
-							{@const Icon = stat.icon}
 							<Icon class="h-8 w-8" />
 						</div>
 					</div>
