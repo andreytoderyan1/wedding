@@ -35,12 +35,12 @@
 			<div class="prose prose-lg max-w-none">
 				<h1 class="mb-8 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">TCPA Disclaimer</h1>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					BY CALLING OR USING OUR WEBSITE, I GIVE "{link}.com" (the "Site") AND ANY OF OUR PARTNERS, AFFILIATES, AGENTS, ASSIGNS AND SERVICE PROVIDERS EXPRESS WRITTEN PERMISSION TO CONTACT ME AT THE NUMBER AND EMAIL PROVIDED ABOVE, VIA EMAIL, PHONE, TEXT MESSAGE (SMS/MMS) AND/OR CELL PHONE INCLUDING USAGE OF AUTOMATED DIALING EQUIPMENT, ARTIFICIAL INTELLIGENCE AND PRE-RECORDED CALLS AND/OR MESSAGES. YOU FURTHER AGREE THAT "{link}.com" MAY SEND E-MAILS TO YOU AT ANY EMAIL ADDRESS YOU PROVIDE US OR USE OTHER ELECTRONIC MEANS OF COMMUNICATIONS TO THE EXTENT PERMITTED BY LAW. CONSENT MAY BE REVOKED AT ANY TIME AND BY ANY REASONABLE MEANS.
+					BY CALLING OR USING OUR WEBSITE, I GIVE {link} (the "Site") AND ANY OF OUR PARTNERS, AFFILIATES, AGENTS, ASSIGNS AND SERVICE PROVIDERS EXPRESS WRITTEN PERMISSION TO CONTACT ME AT THE NUMBER AND EMAIL PROVIDED ABOVE, VIA EMAIL, PHONE, TEXT MESSAGE (SMS/MMS) AND/OR CELL PHONE INCLUDING USAGE OF AUTOMATED DIALING EQUIPMENT, ARTIFICIAL INTELLIGENCE AND PRE-RECORDED CALLS AND/OR MESSAGES. YOU FURTHER AGREE THAT {link} MAY SEND E-MAILS TO YOU AT ANY EMAIL ADDRESS YOU PROVIDE US OR USE OTHER ELECTRONIC MEANS OF COMMUNICATIONS TO THE EXTENT PERMITTED BY LAW. CONSENT MAY BE REVOKED AT ANY TIME AND BY ANY REASONABLE MEANS.
 				</p>
   
 				<h1 class="mb-8 mt-12 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">Privacy Policy</h1>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					Welcome to {link}.com . We understand that privacy online is important to users of our Site, especially when conducting business. This statement governs our privacy policies with respect to those users of {title}  ("Visitors") who visit without transacting business and Visitors who register to transact business on {title}  and make use of the various services offered by {link}.com (collectively, "Services") ("Authorized Customers").
+					Welcome to {link} . We understand that privacy online is important to users of our Site, especially when conducting business. This statement governs our privacy policies with respect to those users of {title}  ("Visitors") who visit without transacting business and Visitors who register to transact business on {title}  and make use of the various services offered by {link} (collectively, "Services") ("Authorized Customers").
 				</p>
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">"Personally Identifiable Information"</h2>
@@ -58,7 +58,7 @@
 					In addition to our direct collection of information, our third party service vendors (such as credit card companies, clearinghouses and banks) who may provide such services as credit, insurance, and escrow services may collect this information from our Visitors and Authorized Customers. We do not control how these third parties use such information, but we do ask them to disclose how they use personal information provided to them from Visitors and Authorized Customers. Some of these third parties may be intermediaries that act solely as links in the distribution chain, and do not store, retain, or use the information given to them.
 				</p>
   
-				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How does {link}.com use Personally Identifiable Information?</h2>
+				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How does {link} use Personally Identifiable Information?</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
 					We use Personally Identifiable Information to customize {title} , to make appropriate service offerings, and to fulfill buying and selling requests on {title} . We may email Visitors and Authorized Customers about research or purchase and selling opportunities on {title}  or information related to the subject matter of {title} . We may also use Personally Identifiable Information to contact Visitors and Authorized Customers in response to specific inquiries, or to provide requested information.
 				</p>
@@ -70,12 +70,12 @@
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How is Personally Identifiable Information used?</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					By submitting your information, you consent to receive text messages, emails, and/or calls (may be recorded; and may be direct, autodialed or use prerecorded/artificial voices even if on the Do Not Call list) from {link}.com or our partner real estate professionals and their network of service providers, about your inquiry or the home purchase/rental process. Messaging and/or data rates may apply. Consent is not a requirement or condition to receive real estate services. You hereby further confirm that submitting your information creates an electronic signature with the same effect as a handwritten signature.
+					By submitting your information, you consent to receive text messages, emails, and/or calls (may be recorded; and may be direct, autodialed or use prerecorded/artificial voices even if on the Do Not Call list) from {link} or our partner real estate professionals and their network of service providers, about your inquiry or the home purchase/rental process. Messaging and/or data rates may apply. Consent is not a requirement or condition to receive real estate services. You hereby further confirm that submitting your information creates an electronic signature with the same effect as a handwritten signature.
 				</p>
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How is Personally Identifiable Information stored?</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					Personally Identifiable Information collected by {link}.com is securely stored and is not accessible to third parties or employees of {link}.com except for use as indicated above.
+					Personally Identifiable Information collected by {link} is securely stored and is not accessible to third parties or employees of {link} except for use as indicated above.
 				</p>
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">What choices are available to Visitors regarding collection, use and distribution of the information?</h2>
@@ -88,14 +88,14 @@
 					Cookies are used for a variety of reasons. We use Cookies to obtain information about the preferences of our Visitors and the services they select. We also use Cookies for security purposes to protect our Authorized Customers. For example, if an Authorized Customer is logged on and {title}  is unused for more than 10 minutes, we will automatically log the Authorized Customer off.
 				</p>
   
-				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How does {link}.com use login information?</h2>
+				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How does {link} use login information?</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					{link}.com uses login information, including, but not limited to, IP addresses, ISPs, and browser types, to analyze trends, administer {title} , track a user's movement and use, and gather broad demographic information.
+					{link} uses login information, including, but not limited to, IP addresses, ISPs, and browser types, to analyze trends, administer {title} , track a user's movement and use, and gather broad demographic information.
 				</p>
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">What partners or service providers have access to Personally Identifiable Information from Visitors and/or Authorized Customers on {title} ?</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					{link}.com has entered into and will continue to enter into partnerships and other affiliations with a number of vendors. Such vendors may have access to certain Personally Identifiable Information on a need to know basis for evaluating Authorized Customers for service eligibility. Our privacy policy does not cover their collection or use of this information. Disclosure of Personally Identifiable Information to comply with law. We will disclose Personally Identifiable Information in order to comply with a court order or subpoena or a request from a law enforcement agency to release information. We will also disclose Personally Identifiable Information when reasonably necessary to protect the safety of our Visitors and Authorized Customers.
+					{link} has entered into and will continue to enter into partnerships and other affiliations with a number of vendors. Such vendors may have access to certain Personally Identifiable Information on a need to know basis for evaluating Authorized Customers for service eligibility. Our privacy policy does not cover their collection or use of this information. Disclosure of Personally Identifiable Information to comply with law. We will disclose Personally Identifiable Information in order to comply with a court order or subpoena or a request from a law enforcement agency to release information. We will also disclose Personally Identifiable Information when reasonably necessary to protect the safety of our Visitors and Authorized Customers.
 				</p>
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How does {title} keep Personally Identifiable Information secure?</h2>
@@ -105,7 +105,7 @@
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">How can Visitors correct any inaccuracies in Personally Identifiable Information?</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					Visitors and Authorized Customers may contact us to update Personally Identifiable Information about them or to correct any inaccuracies by emailing us at support@{link}.com
+					Visitors and Authorized Customers may contact us to update Personally Identifiable Information about them or to correct any inaccuracies by emailing us at support@{link}
 				</p>
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">Can a Visitor delete or deactivate Personally Identifiable Information collected by {title}?</h2>
@@ -120,7 +120,7 @@
   
 				<h2 class="mt-8 mb-4 text-2xl font-semibold text-gray-900">Links:</h2>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
-					{link}.com contains links to other web sites. Please note that when you click on one of these links, you are moving to another web site. We encourage you to read the privacy statements of these linked sites as their privacy policies may differ from ours.
+					{link} contains links to other web sites. Please note that when you click on one of these links, you are moving to another web site. We encourage you to read the privacy statements of these linked sites as their privacy policies may differ from ours.
 				</p>
 			</div>
 		</div>
