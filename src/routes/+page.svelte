@@ -18,6 +18,7 @@
 		MapPin
 	} from '@lucide/svelte';
 	import Navigation from '$lib/components/Navigaton.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
 
 	let zipCode: string = $state('');
@@ -370,4 +371,7 @@
 			</div>
 		</div>
 	</section>
+
+	<!-- Footer -->
+	<Footer />
 </div>
