@@ -25,21 +25,7 @@
 	};
 
 	const getFreeEstimate = () => {
-		if (!zipCode.trim()) {
-			alert('Please enter a ZIP code');
-			return;
-		}
-		if (zipCode.length !== 5) {
-			alert('Please enter a valid 5-digit ZIP code');
-			return;
-		}
-		const params = new URLSearchParams();
-		params.set('zipCode', zipCode.trim());
-		params.set('utm_source', utmData.utm_source);
-		params.set('utm_medium', utmData.utm_medium);
-		params.set('utm_campaign', utmData.utm_campaign);
-		params.set('utm_subid', utmData.utm_subid);
-		goto(`/services?${params.toString()}`);
+		window.open('https://www.thumbtack.com/k/hvac-contractors/near-me', '_blank');
 	};
 
 	onMount(() => {

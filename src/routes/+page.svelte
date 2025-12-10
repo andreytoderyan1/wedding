@@ -41,21 +41,7 @@
 	};
 
 	const getFreeEstimate = () => {
-		if (!zipCode.trim()) {
-			alert('Please enter a ZIP code');
-			return;
-		}
-		if (zipCode.length !== 5) {
-			alert('Please enter a valid 5-digit ZIP code');
-			return;
-		}
-		const params = new URLSearchParams();
-		params.set('zipCode', zipCode.trim());
-		params.set('utm_source', utmData.utm_source);
-		params.set('utm_medium', utmData.utm_medium);
-		params.set('utm_campaign', utmData.utm_campaign);
-		params.set('utm_subid', utmData.utm_subid);
-		goto(`/services?${params.toString()}`);
+		window.open('https://www.thumbtack.com/k/hvac-contractors/near-me', '_blank');
 	};
 
 	onMount(() => {
@@ -165,13 +151,15 @@
 					</p>
 					
 					<div class="mb-8 flex flex-wrap gap-4">
-						<button
-							onclick={() => scrollToSection("#get-estimate")}
+						<a
+							href="https://www.thumbtack.com/k/hvac-contractors/near-me"
+							target="_blank"
+							rel="noopener noreferrer"
 							class="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-blue-500/50 transition-all hover:scale-105 hover:shadow-xl hover:shadow-blue-500/50"
 						>
 							Get Free Estimate
 							<ArrowRight class="h-5 w-5 transition-transform group-hover:translate-x-1" />
-						</button>
+						</a>
 						<button
 							onclick={() => scrollToSection("#services")}
 							class="rounded-lg border-2 border-slate-600 bg-slate-800/50 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:border-slate-500 hover:bg-slate-800/70"
@@ -355,12 +343,14 @@
 					Get started with a free estimate from our expert HVAC team
 				</p>
 				<div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
-					<button
-						onclick={() => scrollToSection("#get-estimate")}
-						class="rounded-lg bg-white px-10 py-4 text-lg font-semibold text-blue-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+					<a
+						href="https://www.thumbtack.com/k/hvac-contractors/near-me"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="rounded-lg bg-white px-10 py-4 text-lg font-semibold text-blue-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl text-center"
 					>
 						Get Free Estimate
-					</button>
+					</a>
 					<a
 						href="/hvac"
 						class="rounded-lg border-2 border-white bg-transparent px-10 py-4 text-lg font-semibold text-white transition-all hover:bg-white/10"

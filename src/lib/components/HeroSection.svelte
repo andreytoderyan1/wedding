@@ -62,13 +62,15 @@
 
 				<!-- CTA Buttons -->
 				<div class="flex flex-col gap-4 sm:flex-row">
-					<button
-						onclick={() => scrollToSection("#getServiceQuoteSection", 100)}
-						class="group rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl hover:scale-105"
+					<a
+						href="https://www.thumbtack.com/k/hvac-contractors/near-me"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="group rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-xl hover:scale-105 text-center"
 					>
 						Get Free Estimate
 						<span class="ml-2 inline-block transition-transform group-hover:translate-x-1">→</span>
-					</button>
+					</a>
 					<button
 						onclick={() => scrollToSection("#services", 100)}
 						class="rounded-lg border-2 border-white bg-white/10 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20"
