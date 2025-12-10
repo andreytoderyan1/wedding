@@ -1,142 +1,174 @@
-# Image Requirements for HVAC Website
+# Image Requirements
 
-This document lists all images needed for the website, where they're used, and their current status.
+This document lists all images needed for the `/windows` and `/bathroom` pages.
 
-## ✅ Images Already Added
+## Header Logo
 
-1. **`hero-home-dark.jpg`** ✅
-   - **Location**: Home page (`/`) - Hero section background
-   - **Usage**: Full-width hero background with dark overlay
-   - **Status**: ✅ Added
-
-2. **`home.jpg`** ✅
-   - **Location**: HVAC landing page (`/hvac`) - Hero section background
-   - **Usage**: Subtle background image with light overlay
-   - **Status**: ✅ Added
-
-3. **`service-ac-installation.webp`** ✅
-   - **Location**: Both pages - AC service cards
-   - **Usage**: Background image in AC service cards (low opacity)
-   - **Status**: ✅ Added
+**Location:** Both pages - Header section
+**File Path:** `/static/HomeQuote.png` (already exists)
+**Current Usage:** `<img src="/HomeQuote.png" alt="HomeQuote Logo" class="h-10" />`
+**Status:** ✅ Already exists in `/static/HomeQuote.png`
+**Requirements:**
+- Format: PNG (current)
+- Dimensions: Minimum 200px width, transparent background preferred
+- Content: HomeQuote logo or company branding
+- Style: Clean, professional, works on white background
 
 ---
 
-## 📋 Images Still Needed
+## Windows Page (`/windows`)
 
-### Home Page (`/`) - Dark Theme
+### Hero Section - Modern House Exterior
 
-#### 1. Service Card Images (Optional but Recommended)
-These would enhance the service cards but are optional since icons are already used.
+**Location:** Hero section, right side (around line 81-85 in `src/routes/windows/+page.svelte`)
+**Current Placeholder Code:**
+```svelte
+<div class="aspect-video rounded-2xl bg-gradient-to-br from-blue-200 to-slate-200 flex items-center justify-center">
+    <span class="text-slate-500 text-lg">Modern house exterior image placeholder</span>
+</div>
+```
 
-- **`service-heating.webp`** or `service-heating.jpg`
-  - **Location**: Home page - "Heating Systems" service card
-  - **Usage**: Background image (10% opacity) in heating service card
-  - **Priority**: Optional
+**Replace With:**
+```svelte
+<img 
+    src="/windows-hero.jpg" 
+    alt="Modern home with energy-efficient windows" 
+    class="aspect-video w-full rounded-2xl object-cover"
+/>
+```
 
-- **`service-air-quality.webp`** or `service-air-quality.jpg`
-  - **Location**: Home page - "Indoor Air Quality" service card
-  - **Usage**: Background image (10% opacity) in air quality service card
-  - **Priority**: Optional
-
-- **`service-maintenance.webp`** or `service-maintenance.jpg`
-  - **Location**: Home page - "Maintenance Plans" service card
-  - **Usage**: Background image (10% opacity) in maintenance service card
-  - **Priority**: Optional
-
----
-
-### HVAC Landing Page (`/hvac`) - Light Theme
-
-#### 1. Service Card Images (Optional but Recommended)
-These would enhance the service cards but are optional since icons are already used.
-
-- **`service-heating-light.webp`** or `service-heating-light.jpg`
-  - **Location**: HVAC landing page - "Heating Systems" service card
-  - **Usage**: Background image (5% opacity) in heating service card
-  - **Priority**: Optional
-
-- **`service-air-quality-light.webp`** or `service-air-quality-light.jpg`
-  - **Location**: HVAC landing page - "Indoor Air Quality" service card
-  - **Usage**: Background image (5% opacity) in air quality service card
-  - **Priority**: Optional
-
-- **`service-maintenance-light.webp`** or `service-maintenance-light.jpg`
-  - **Location**: HVAC landing page - "Preventive Maintenance" service card
-  - **Usage**: Background image (5% opacity) in maintenance service card
-  - **Priority**: Optional
+**Requirements:**
+- File Name: `windows-hero.jpg` (or `.webp`)
+- File Location: `/static/windows-hero.jpg`
+- Format: JPG or WebP
+- Dimensions: Recommended 1200x800px (aspect ratio 3:2 or 16:9)
+- Content: Modern home exterior showcasing windows
+- Style: 
+  - Professional photography
+  - Well-lit, daytime shot
+  - Shows quality windows installed on a modern home
+  - Clean, inviting aesthetic
+  - Should convey energy efficiency and quality
+- Usage: Displayed in rounded-2xl container, responsive sizing
 
 ---
 
-## 📐 Image Specifications
+## Bathroom Page (`/bathroom`)
 
-### Hero Background Images
-- **Format**: JPG or WebP
-- **Size**: 1920x1080px minimum (16:9 aspect ratio)
-- **File Size**: Optimized, under 500KB recommended
-- **Style**:
-  - Home page: Dark, professional, modern HVAC equipment
-  - Landing page: Bright, clean, modern home interior
+### Hero Section - Modern House Exterior
 
-### Service Card Images
-- **Format**: WebP (preferred) or JPG
-- **Size**: 800x600px or 1200x900px (4:3 aspect ratio)
-- **File Size**: Optimized, under 200KB recommended
-- **Style**: 
-  - Home page: Dark theme compatible
-  - Landing page: Light theme compatible
+**Location:** Hero section, right side (around line 81-85 in `src/routes/bathroom/+page.svelte`)
+**Current Placeholder Code:**
+```svelte
+<div class="aspect-video rounded-2xl bg-gradient-to-br from-blue-200 to-slate-200 flex items-center justify-center">
+    <span class="text-slate-500 text-lg">Modern house exterior image placeholder</span>
+</div>
+```
 
----
+**Replace With:**
+```svelte
+<img 
+    src="/bathroom-hero.jpg" 
+    alt="Modern home exterior" 
+    class="aspect-video w-full rounded-2xl object-cover"
+/>
+```
 
-## 🎨 Image Style Guidelines
-
-### Home Page (Dark Theme)
-- **Colors**: Dark backgrounds (slate-900, slate-800)
-- **Mood**: Professional, tech-forward, sophisticated
-- **Accents**: Blue/cyan gradients
-- **Images should**: Work well with dark overlays
-
-### HVAC Landing Page (Light Theme)
-- **Colors**: White/light backgrounds
-- **Mood**: Clean, minimalist, professional
-- **Accents**: Soft blue tones
-- **Images should**: Work well with light overlays and low opacity
-
----
-
-## 📝 Quick Reference: What's Currently Used
-
-| Image File | Page | Section | Status |
-|------------|------|---------|--------|
-| `hero-home-dark.jpg` | Home (`/`) | Hero background | ✅ Added |
-| `home.jpg` | HVAC (`/hvac`) | Hero background | ✅ Added |
-| `service-ac-installation.webp` | Both | AC service card | ✅ Added |
-| `service-heating.*` | Home | Heating service card | ❌ Optional |
-| `service-air-quality.*` | Home | Air quality service card | ❌ Optional |
-| `service-maintenance.*` | Home | Maintenance service card | ❌ Optional |
-| `service-heating-light.*` | HVAC | Heating service card | ❌ Optional |
-| `service-air-quality-light.*` | HVAC | Air quality service card | ❌ Optional |
-| `service-maintenance-light.*` | HVAC | Maintenance service card | ❌ Optional |
+**Requirements:**
+- File Name: `bathroom-hero.jpg` (or `.webp`)
+- File Location: `/static/bathroom-hero.jpg`
+- Format: JPG or WebP
+- Dimensions: Recommended 1200x800px (aspect ratio 3:2 or 16:9)
+- Content: Modern home exterior (can be same as windows page or different)
+- Style:
+  - Professional photography
+  - Well-lit, daytime shot
+  - Modern, clean home exterior
+  - Inviting and professional aesthetic
+- Usage: Displayed in rounded-2xl container, responsive sizing
 
 ---
 
-## 💡 Notes
+## Optional Service Icons
 
-- **All images go in**: `/static/` directory
-- **Current images are working**: The site is fully functional with the 3 images already added
-- **Optional images**: The service card images are optional enhancements - the site works perfectly with just icons
-- **File naming**: Use lowercase, hyphens for spaces (e.g., `service-heating.webp`)
+**Note:** Currently using Lucide icons (Zap, Shield, Award, CheckCircle, etc.). If you want custom service icons, they would replace these in the service cards.
 
 ---
 
-## 🚀 Priority Summary
+## Image Implementation Notes
 
-**Must Have (Already Done):**
-- ✅ Hero background for home page
-- ✅ Hero background for landing page  
-- ✅ AC service image
+1. **File Organization:**
+   - Place images in `/static/` directory (SvelteKit uses `/static/` for public assets)
+   - Use descriptive filenames (e.g., `windows-hero.jpg`, `bathroom-hero.jpg`)
+   - Images in `/static/` are served from the root path (e.g., `/static/image.jpg` → `/image.jpg`)
 
-**Nice to Have (Optional):**
-- Service images for heating, air quality, and maintenance cards (both pages)
+2. **Optimization:**
+   - Compress images for web (use tools like ImageOptim, TinyPNG, or Squoosh)
+   - Consider WebP format for better compression
+   - Provide @2x versions for retina displays if needed
 
-The website is **fully functional** with the current images. Additional service card images would be visual enhancements but are not required.
+3. **Accessibility:**
+   - All images should have descriptive alt text (already implemented in code)
+   - Ensure sufficient contrast for any text overlays
 
+4. **Responsive Design:**
+   - Images are already set up to be responsive
+   - Hero images use `aspect-video` class for consistent sizing
+   - Images will scale appropriately on mobile devices
+
+---
+
+## Current Image Placeholders
+
+All image placeholders are currently implemented as:
+- Gradient backgrounds with descriptive text
+- Functional layout that works without images
+- Easy to replace by updating the `<div>` elements to `<img>` tags
+
+---
+
+## Quick Reference
+
+| Page | Image | File Name | Location | Priority | Status |
+|------|-------|-----------|----------|----------|--------|
+| Both | Logo | `HomeQuote.png` | Header | High | ✅ Exists |
+| Windows | House Exterior | `windows-hero.jpg` | Hero Section | High | ⏳ Needed |
+| Bathroom | House Exterior | `bathroom-hero.jpg` | Hero Section | High | ⏳ Needed |
+
+---
+
+## Image Generation Prompts
+
+### Windows Hero Image
+```
+Professional photography of a modern home exterior showcasing energy-efficient windows. 
+Daytime shot, well-lit, clean and inviting aesthetic. The home should have high-quality 
+windows visible, conveying energy efficiency and quality. Modern architectural style, 
+blue sky, green lawn, professional real estate photography style.
+```
+
+### Bathroom Hero Image
+```
+Professional photography of a modern home exterior. Daytime shot, well-lit, clean and 
+inviting aesthetic. Modern architectural style, blue sky, green lawn, professional 
+real estate photography style. Can be same as windows image or different modern home.
+```
+
+### Logo
+```
+HomeQuote logo or company branding. Clean, professional design. Works on white background. 
+Minimalist style, modern typography. Should be recognizable and professional.
+```
+
+---
+
+## Next Steps
+
+1. ✅ Logo already exists at `/static/HomeQuote.png` - no action needed
+2. Generate or source the hero images using the prompts provided above
+3. Place them in the `/static/` directory with the exact filenames:
+   - `/static/windows-hero.jpg`
+   - `/static/bathroom-hero.jpg`
+4. Update the placeholder divs in the Svelte components to use `<img>` tags (code examples provided above)
+5. Test on different screen sizes to ensure proper display
+6. Optimize images for web (compress, consider WebP format)
