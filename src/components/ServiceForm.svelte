@@ -8,7 +8,7 @@
 	let selectedServiceType: string = $state('');
 	let isDropdownOpen: boolean = $state(false);
 
-	const { serviceType, limit } = $props<{ serviceType: any[], limit?: number }>();
+	const { serviceType, limit, thumbtackUrl = 'https://www.thumbtack.com/k/hvac-contractors/near-me' } = $props<{ serviceType: any[], limit?: number, thumbtackUrl?: string }>();
 
 	// Limit services if limit is provided
 	const displayServices = $derived(limit ? serviceType.slice(0, limit) : serviceType);
@@ -48,7 +48,7 @@
 			return;
 		}
 
-		window.open('https://www.thumbtack.com/k/hvac-contractors/near-me', '_blank');
+		window.open(thumbtackUrl, '_blank');
 	};
 
 	// Close dropdown when clicking outside
