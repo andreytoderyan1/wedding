@@ -95,11 +95,6 @@
 			title: 'Free Estimates',
 			description: 'No-obligation quotes for all services',
 			icon: CheckCircle
-		},
-		{
-			title: 'Same-Day Service',
-			description: 'Fast response times for your convenience',
-			icon: Clock
 		}
 	];
 

@@ -19,11 +19,21 @@
 		return brandName.charAt(0).toUpperCase() + brandName.slice(1);
 	}
 
+	let lastUpdated = "";
+
 	onMount(() => {
 		const currentDomain = window.location.hostname || 'example.com';
 		console.log('Original hostname:', currentDomain);
 		title = formatBrandName(currentDomain)
 		link = removeSubdomain(currentDomain)
+		
+		// Set dynamic date
+		const today = new Date();
+		lastUpdated = today.toLocaleDateString('en-US', { 
+			year: 'numeric', 
+			month: 'long', 
+			day: 'numeric' 
+		});
 	})
 </script>
 
@@ -33,9 +43,15 @@
 	<section class="py-12 sm:py-16 lg:py-20">
 		<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 			<div class="prose prose-lg max-w-none">
+				<div class="mb-6 text-sm text-gray-500">
+					<strong>Last Updated:</strong> {lastUpdated || 'Loading...'}
+				</div>
 				<h1 class="mb-8 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">Terms of Service</h1>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
 					PLEASE READ! {link} REQUIRES CONSIDERATION FOR AND AS A CONDITION OF ALLOWING YOU ACCESS.
+				</p>
+				<p class="mb-6 text-base leading-relaxed text-gray-700">
+					Please review our <a href="/privacy" class="text-blue-600 hover:text-blue-800 underline">Privacy Policy</a> to understand how we collect, use, and protect your information.
 				</p>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
 					READING AND ACCEPTING THE TERMS OF USE AND READING AND ACCEPTING THE PROVISIONS OF THE PRIVACY POLICY OF {link} ARE REQUIRED CONSIDERATIONS FOR {link} GRANTING YOU THE RIGHT TO VISIT, READ OR INTERACT WITH IT.

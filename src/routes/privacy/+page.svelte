@@ -19,11 +19,21 @@
 		return brandName.charAt(0).toUpperCase() + brandName.slice(1);
 	}
   
+	let lastUpdated = "";
+
 	onMount(() => {
 		const currentDomain = window.location.hostname || 'example.com';
 		console.log('Original hostname:', currentDomain);
 		title = formatBrandName(currentDomain)
 		link = removeSubdomain(currentDomain)
+		
+		// Set dynamic date
+		const today = new Date();
+		lastUpdated = today.toLocaleDateString('en-US', { 
+			year: 'numeric', 
+			month: 'long', 
+			day: 'numeric' 
+		});
 	})
 </script>
 
@@ -33,6 +43,9 @@
 	<section class="py-12 sm:py-16 lg:py-20">
 		<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 			<div class="prose prose-lg max-w-none">
+				<div class="mb-6 text-sm text-gray-500">
+					<strong>Last Updated:</strong> {lastUpdated || 'Loading...'}
+				</div>
 				<h1 class="mb-8 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">TCPA Disclaimer</h1>
 				<p class="mb-6 text-base leading-relaxed text-gray-700">
 					BY CALLING OR USING OUR WEBSITE, I GIVE {link} (the "Site") AND ANY OF OUR PARTNERS, AFFILIATES, AGENTS, ASSIGNS AND SERVICE PROVIDERS EXPRESS WRITTEN PERMISSION TO CONTACT ME AT THE NUMBER AND EMAIL PROVIDED ABOVE, VIA EMAIL, PHONE, TEXT MESSAGE (SMS/MMS) AND/OR CELL PHONE INCLUDING USAGE OF AUTOMATED DIALING EQUIPMENT, ARTIFICIAL INTELLIGENCE AND PRE-RECORDED CALLS AND/OR MESSAGES. YOU FURTHER AGREE THAT {link} MAY SEND E-MAILS TO YOU AT ANY EMAIL ADDRESS YOU PROVIDE US OR USE OTHER ELECTRONIC MEANS OF COMMUNICATIONS TO THE EXTENT PERMITTED BY LAW. CONSENT MAY BE REVOKED AT ANY TIME AND BY ANY REASONABLE MEANS.
