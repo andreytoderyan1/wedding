@@ -168,7 +168,7 @@ END:VCALENDAR`;
 	};
 </script>
 
-<div class="min-h-screen" style="background-color: #6B703D;">
+<div class="min-h-screen" style="background-color: #FFFFFF;">
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
 	<div class="py-18">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -176,15 +176,15 @@ END:VCALENDAR`;
 			<div class="mb-6 text-center">
 				{#if submitted}
 					<h2 
-						class="text-5xl italic font-normal text-white transition-opacity duration-1000 ease-in"
-						style="font-family: 'Playfair Display', serif; font-weight: 400; letter-spacing: -0.02em;"
+						class="text-5xl italic font-normal transition-opacity duration-1000 ease-in"
+						style="font-family: 'Playfair Display', serif; font-weight: 400; letter-spacing: -0.02em; color: #4A5230;"
 					>
 						You're all set
 					</h2>
 				{:else}
 					<h2 
-						class="text-3xl font-normal text-white italic"
-						style="font-family: 'Playfair Display', serif; font-weight: 100; letter-spacing: 0.2em; font-style: italic; transform: scaleX(0.85);"
+						class="text-3xl font-normal italic"
+						style="font-family: 'Playfair Display', serif; font-weight: 100; letter-spacing: 0.2em; font-style: italic; transform: scaleX(0.85); color: #4A5230;"
 					>
 						RSVP
 					</h2>
@@ -197,7 +197,7 @@ END:VCALENDAR`;
 					<!-- 1. Confirmation Message -->
 					<div class="mb-5 text-center">
 						{#if submittedNames.length > 0}
-							<p class="text-xl text-white font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
+							<p class="text-xl font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230;">
 								{#if submittedNames.length === 1}
 									Thank you, {submittedNames[0]}! We can't wait to celebrate with you.
 								{:else if submittedNames.length === 2}
@@ -207,7 +207,7 @@ END:VCALENDAR`;
 								{/if}
 							</p>
 						{:else}
-							<p class="text-xl text-white font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
+							<p class="text-xl font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230;">
 								We can't wait to celebrate with you.
 							</p>
 						{/if}
@@ -215,8 +215,8 @@ END:VCALENDAR`;
 					
 					<!-- 2. Event Details - Date/Time -->
 					<div class="mb-10">
-						<p class="text-lg text-white font-normal tracking-wide" style="font-family: 'Inter', sans-serif;">
-							Sunday <span class="mx-2 text-white/60">·</span> July 5 <span class="mx-2 text-white/60">·</span> 3:00 PM
+						<p class="text-lg font-normal tracking-wide" style="font-family: 'Inter', sans-serif; color: #4A5230;">
+							Sunday <span class="mx-2" style="color: #4A5230; opacity: 0.6;">·</span> July 5 <span class="mx-2" style="color: #4A5230; opacity: 0.6;">·</span> 3:00 PM
 						</p>
 					</div>
 					
@@ -227,13 +227,13 @@ END:VCALENDAR`;
 							class="text-left w-full cursor-pointer group transition-opacity hover:opacity-70"
 						>
 							<div class="space-y-3">
-								<p class="text-xl text-white font-medium tracking-tight" style="font-family: 'Playfair Display', serif; font-weight: 500;">
+								<p class="text-xl font-medium tracking-tight" style="font-family: 'Playfair Display', serif; font-weight: 500; color: #4A5230;">
 									Cape Horn Estate
 								</p>
-								<div class="space-y-1 text-white/90 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
+								<div class="space-y-1 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.9;">
 									<p class="text-base">29200 SE Larch Mountain Rd</p>
 									<p class="text-base">Corbett, OR 97019</p>
-									<p class="text-sm text-white/70 mt-3 font-normal">Columbia Gorge</p>
+									<p class="text-sm mt-3 font-normal" style="opacity: 0.7;">Columbia Gorge</p>
 								</div>
 							</div>
 						</button>
@@ -248,9 +248,10 @@ END:VCALENDAR`;
 									window.open(registryUrl, '_blank', 'noopener,noreferrer');
 								}
 							}}
-							class="w-full px-8 py-2.5 bg-white text-black rounded-2xl hover:bg-white/90 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+							class="w-full px-8 py-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+							style="background-color: #4A5230; color: #FFFFFF;"
 						>
-							<Gift class="h-4 w-4 text-black/90 group-hover:text-black transition-colors" />
+							<Gift class="h-4 w-4 transition-colors" style="color: #FFFFFF;" />
 							<span>View Registry</span>
 						</button>
 					</div>
@@ -259,16 +260,18 @@ END:VCALENDAR`;
 					<div class="space-y-3">
 						<button
 							onclick={addToGoogleCalendar}
-							class="w-full px-8 py-2.5 bg-white text-black rounded-2xl hover:bg-white/90 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group"
+							class="w-full px-8 py-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group hover:opacity-90"
+							style="background-color: #4A5230; color: #FFFFFF;"
 						>
-							<Calendar class="h-4 w-4 text-black/90 group-hover:text-black transition-colors" />
+							<Calendar class="h-4 w-4 transition-colors" style="color: #FFFFFF;" />
 							<span>Add to Google Calendar</span>
 						</button>
 						<button
 							onclick={addToAppleCalendar}
-							class="w-full px-8 py-2.5 bg-white text-black rounded-2xl hover:bg-white/90 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group"
+							class="w-full px-8 py-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group hover:opacity-90"
+							style="background-color: #4A5230; color: #FFFFFF;"
 						>
-							<Calendar class="h-4 w-4 text-black/90 group-hover:text-black transition-colors" />
+							<Calendar class="h-4 w-4 transition-colors" style="color: #FFFFFF;" />
 							<span>Add to Apple Calendar</span>
 						</button>
 					</div>
@@ -279,8 +282,8 @@ END:VCALENDAR`;
 					<form onsubmit={handleSubmit} class="space-y-6" novalidate>
 					{#each names as name, index}
 						<div>
-							<label for="name-{index}" class="text-base font-semibold text-white mb-3 block">
-								 {#if index === 0}<span class="text-white/60"></span>{/if}
+							<label for="name-{index}" class="text-base font-semibold mb-3 block" style="color: #4A5230;">
+								 {#if index === 0}<span style="color: #4A5230; opacity: 0.6;"></span>{/if}
 							</label>
 							<div class="flex gap-3">
 								<div class="flex-1">
@@ -300,11 +303,12 @@ END:VCALENDAR`;
 												delete formErrors[index];
 											}
 										}}
-										class="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 text-base bg-white/10 backdrop-blur-sm transition-all text-white placeholder-white/60 {formErrors[index] ? 'border-white/60' : 'border-white/30'}"
+										class="w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all text-base focus:ring-2"
+										style="border-color: {formErrors[index] ? '#4A5230' : 'rgba(74, 82, 48, 0.3)'}; background-color: rgba(74, 82, 48, 0.05); color: #4A5230; --tw-ring-color: rgba(74, 82, 48, 0.2);"
 										placeholder="Enter full name"
 									/>
 									{#if formErrors[index]}
-										<p class="text-sm text-white/80 mt-2 font-light" style="font-family: 'Inter', sans-serif;">
+										<p class="text-sm mt-2 font-light" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.8;">
 											{formErrors[index]}
 										</p>
 									{/if}
@@ -313,9 +317,10 @@ END:VCALENDAR`;
 									<button
 										type="button"
 										onclick={() => removePerson(index)}
-										class="px-4 py-3 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl hover:bg-white/20 transition-all"
+										class="px-4 py-3 border-2 rounded-xl transition-all hover:opacity-80"
+										style="background-color: rgba(74, 82, 48, 0.1); border-color: rgba(74, 82, 48, 0.3); color: #4A5230;"
 									>
-										<X class="h-5 w-5" />
+										<X class="h-5 w-5" style="color: #4A5230;" />
 									</button>
 								{/if}
 							</div>
@@ -326,9 +331,10 @@ END:VCALENDAR`;
 					<button
 						type="button"
 						onclick={addPerson}
-						class="w-full px-6 py-3 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl hover:bg-white/20 transition-all flex items-center justify-center gap-2 text-base font-semibold hover:scale-105"
+						class="w-full px-6 py-3 border-2 rounded-xl transition-all flex items-center justify-center gap-2 text-base font-semibold hover:opacity-80"
+						style="background-color: rgba(74, 82, 48, 0.1); border-color: rgba(74, 82, 48, 0.3); color: #4A5230;"
 					>
-						<Plus class="h-5 w-5" />
+						<Plus class="h-5 w-5" style="color: #4A5230;" />
 						Add Additional Person
 					</button>
 
@@ -336,7 +342,8 @@ END:VCALENDAR`;
 					<div class="pt-6">
 						<button
 							type="submit"
-							class="w-full px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-xl hover:bg-white/20 transition-all text-lg font-bold hover:scale-105 flex items-center justify-center gap-2"
+							class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2"
+							style="background-color: #4A5230; color: #FFFFFF;"
 						>
 							Submit RSVP
 						</button>
