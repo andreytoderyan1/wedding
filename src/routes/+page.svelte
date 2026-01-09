@@ -177,7 +177,7 @@ END:VCALENDAR`;
 </script>
 
 <div class="min-h-screen" style="background-color: #FFFFFF;">
-	<div class="relative w-full md:w-3/4 mx-auto">
+	<div class="relative w-full mx-auto">
 		<img src="/Full.JPG" alt="" class="w-full h-auto object-cover" />
 		<!-- Save the Date Overlay -->
 		<div class="absolute inset-0 flex flex-col items-center justify-start text-white px-4" style="padding-top: 40%; padding-bottom: 10%;">
@@ -192,7 +192,7 @@ END:VCALENDAR`;
 					</span>
 					<span 
 						class="font-light relative italic"
-						style="font-family: 'Allura', cursive; font-weight: 400; font-size: clamp(48px, 8vw, 72px); letter-spacing: 0.05em; font-style: italic;"
+						style="font-family: 'Allura', cursive; font-weight: 400; font-size: clamp(48px, 8vw, 72px); letter-spacing: 0.05em; font-style: italic; transform: scaleX(0.9);"
 					>
 						the
 					</span>
@@ -260,28 +260,35 @@ END:VCALENDAR`;
 						{/if}
 					</div>
 					
+					<!-- Invitation Note -->
+					<div class="mb-8 text-center">
+						<p class="text-base font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.8;">
+							Formal invitations will be sent out<br />closer to the date.
+						</p>
+					</div>
+					
 					<!-- 2. Event Details - Date/Time -->
-					<div class="mb-10">
-						<p class="text-lg font-normal tracking-wide" style="font-family: 'Inter', sans-serif; color: #4A5230;">
-							Sunday <span class="mx-2" style="color: #4A5230; opacity: 0.6;">·</span> July 5 <span class="mx-2" style="color: #4A5230; opacity: 0.6;">·</span> 3:00 PM
+					<div class="mb-8 text-center">
+						<p class="text-xl font-medium tracking-wide mb-1" style="font-family: 'Playfair Display', serif; font-weight: 500; color: #4A5230;">
+							Sunday, July 5
+						</p>
+						<p class="text-base font-light tracking-wide" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.75;">
+							3:00 PM
 						</p>
 					</div>
 					
 					<!-- 3. Location - Premium Typography -->
-					<div class="mb-12">
+					<div class="mb-12 text-center">
 						<button
 							onclick={copyAddress}
-							class="text-left w-full cursor-pointer group transition-opacity hover:opacity-70"
+							class="w-full cursor-pointer group transition-opacity hover:opacity-70"
 						>
-							<div class="space-y-3">
-								<p class="text-xl font-medium tracking-tight" style="font-family: 'Playfair Display', serif; font-weight: 500; color: #4A5230;">
-									Cape Horn Estate
-								</p>
-								<div class="space-y-1 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.9;">
-									<p class="text-base">29200 SE Larch Mountain Rd</p>
-									<p class="text-base">Corbett, OR 97019</p>
-									<p class="text-sm mt-3 font-normal" style="opacity: 0.7;">Columbia Gorge</p>
-								</div>
+							<p class="text-xl font-medium tracking-tight mb-2" style="font-family: 'Playfair Display', serif; font-weight: 500; color: #4A5230;">
+								Cape Horn Estate
+							</p>
+							<div class="space-y-1 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.75;">
+								<p class="text-base">29200 SE Larch Mountain Rd</p>
+								<p class="text-base">Corbett, OR 97019</p>
 							</div>
 						</button>
 					</div>
@@ -306,20 +313,20 @@ END:VCALENDAR`;
 					<!-- 5. Actions - Calendar Buttons -->
 					<div class="space-y-3">
 						<button
-							onclick={addToGoogleCalendar}
-							class="w-full px-8 py-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group hover:opacity-90"
-							style="background-color: #4A5230; color: #FFFFFF;"
-						>
-							<Calendar class="h-4 w-4 transition-colors" style="color: #FFFFFF;" />
-							<span>Add to Google Calendar</span>
-						</button>
-						<button
 							onclick={addToAppleCalendar}
 							class="w-full px-8 py-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group hover:opacity-90"
 							style="background-color: #4A5230; color: #FFFFFF;"
 						>
 							<Calendar class="h-4 w-4 transition-colors" style="color: #FFFFFF;" />
 							<span>Add to Apple Calendar</span>
+						</button>
+						<button
+							onclick={addToGoogleCalendar}
+							class="w-full px-8 py-2.5 rounded-2xl transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group hover:opacity-90"
+							style="background-color: #4A5230; color: #FFFFFF;"
+						>
+							<Calendar class="h-4 w-4 transition-colors" style="color: #FFFFFF;" />
+							<span>Add to Google Calendar</span>
 						</button>
 					</div>
 				</div>
