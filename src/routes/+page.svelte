@@ -119,8 +119,16 @@ END:VCALENDAR`;
 	const handleSubmit = (e: Event) => {
 		e.preventDefault();
 		
+		// Filter out empty strings and trim whitespace
+		const validNames = names.filter(name => name.trim() !== '');
+		
+		// Don't submit if no valid names
+		if (validNames.length === 0) {
+			return;
+		}
+		
 		const formData = {
-			names: names.filter(name => name.trim() !== '')
+			names: validNames
 		};
 		
 		// Store submitted names for personalization
@@ -134,7 +142,7 @@ END:VCALENDAR`;
 		submitted = true;
 		
 		// Check for "bruh" in any name (case-insensitive) - don't submit to Google Sheets if found
-		const hasBruh = names.some(name => name.toLowerCase().includes('bruh'));
+		const hasBruh = validNames.some(name => name.toLowerCase().includes('bruh'));
 		if (hasBruh) {
 			// Skip submission to Google Sheets, but still show thank you message
 			return;
@@ -169,7 +177,46 @@ END:VCALENDAR`;
 </script>
 
 <div class="min-h-screen" style="background-color: #FFFFFF;">
-	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
+	<div class="relative w-full md:w-3/4 mx-auto">
+		<img src="/Full.JPG" alt="" class="w-full h-auto object-cover" />
+		<!-- Save the Date Overlay -->
+		<div class="absolute inset-0 flex flex-col items-center justify-start text-white px-4" style="padding-top: 40%; padding-bottom: 10%;">
+			<!-- Main "SAVE the DATE" text -->
+			<div class="text-center mt-4 md:mt-6 mb-4 md:mb-5">
+				<div class="flex items-center justify-center gap-2 md:gap-2.5">
+					<span 
+						class="font-light"
+						style="font-family: 'Cinzel', serif; font-weight: 300; font-size: clamp(48px, 8vw, 72px); letter-spacing: 0.2em;"
+					>
+						SAVE
+					</span>
+					<span 
+						class="font-light relative italic"
+						style="font-family: 'Allura', cursive; font-weight: 400; font-size: clamp(48px, 8vw, 72px); letter-spacing: 0.05em; font-style: italic;"
+					>
+						the
+					</span>
+					<span 
+						class="font-light"
+						style="font-family: 'Cinzel', serif; font-weight: 300; font-size: clamp(48px, 8vw, 72px); letter-spacing: 0.2em;"
+					>
+						DATE
+					</span>
+				</div>
+			</div>
+			<!-- Details below -->
+			<div 
+				class="text-center font-light whitespace-nowrap -mt-4 md:-mt-6"
+				style="font-family: 'Cormorant Garamond', serif; font-weight: 300;"
+			>
+				<span style="font-size: clamp(14px, 2vw, 18px); letter-spacing: 0.18em;">VITA & ANDREY</span>
+				<span class="mx-1.5 md:mx-2">·</span>
+				<span style="font-size: clamp(14px, 2vw, 18px); letter-spacing: 0.18em;">07.05.2026</span>
+				<span class="mx-1.5 md:mx-2">·</span>
+				<span style="font-size: clamp(14px, 2vw, 18px); letter-spacing: 0.1em;">STEVENSON, WA</span>
+			</div>
+		</div>
+	</div>
 	<div class="py-18">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header - Shows "Reserve Below" or "Thank you!" -->
@@ -349,6 +396,23 @@ END:VCALENDAR`;
 						</button>
 					</div>
 				</form>
+				
+				<!-- Registry Button -->
+				<div class="pt-6">
+					<button
+						disabled={!registryUrl}
+						onclick={() => {
+							if (registryUrl) {
+								window.open(registryUrl, '_blank', 'noopener,noreferrer');
+							}
+						}}
+						class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+						style="background-color: #4A5230; color: #FFFFFF;"
+					>
+						<Gift class="h-5 w-5 transition-colors" style="color: #FFFFFF;" />
+						<span>View Registry</span>
+					</button>
+				</div>
 				</div>
 			{/if}
 		</div>
