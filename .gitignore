@@ -1,27 +1,68 @@
-node_modules
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
-/dist
+# Build outputs
+dist/
+build/
+.output/
+.svelte-kit/
+.vercel/
+.netlify/
+.wrangler/
 
-# OS
+# OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Env
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Environment variables
 .env
 .env.*
 !.env.example
 !.env.test
 
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+*.local
 
+# Cloudflare
 .dev.vars*
 !.dev.vars.example
+wrangler.toml
+wrangler.jsonc
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.temp/
