@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { Plus, X, Copy, Check, Calendar } from '@lucide/svelte';
-	import { onMount } from 'svelte';
+	import { Plus, X, Copy, Check, Calendar, Gift } from '@lucide/svelte';
 
 	let names = $state(['']);
 	let submitted = $state(false);
-	let showReserveBelow = $state(false);
 	let addressCopied = $state(false);
 	let submittedNames = $state<string[]>([]);
 	
@@ -15,15 +13,11 @@
 	const eventLocation = '29200 SE Larch Mountain Road, Corbett, Oregon 97019';
 	const fullAddress = '29200 SE Larch Mountain Road\nCorbett, Oregon 97019\nColumbia Gorge';
 	
+	// Registry URL - Crate and Barrel
+	const registryUrl = 'https://www.crateandbarrel.com/gift-registry/'; // Update with your specific Crate and Barrel registry link
+	
 	// Google Apps Script URL for form submissions
 	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-B5eHWQ-hT0ev2l69i_B1dBmr_j7CQl72qaBB5g3UwhVgdhlnF-W-epSf2WkZqcPNJA/exec';
-
-	onMount(() => {
-		// Trigger fade-in animation after component mounts
-		setTimeout(() => {
-			showReserveBelow = true;
-		}, 100);
-	});
 
 	const copyAddress = async () => {
 		try {
@@ -166,7 +160,7 @@ END:VCALENDAR`;
 	};
 </script>
 
-<div class="min-h-screen bg-linear-to-br from-rose-50 via-pink-50 to-rose-100">
+<div class="min-h-screen" style="background-color: #F5F5F0;">
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
 	<div class="py-12">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -175,14 +169,14 @@ END:VCALENDAR`;
 				{#if submitted}
 					<h2 
 						class="text-5xl italic font-normal text-white transition-opacity duration-1000 ease-in"
-						style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);"
+						style="font-family: 'Playfair Display', serif; font-weight: 400; letter-spacing: -0.02em;"
 					>
-						You're all set ✨
+						You're all set
 					</h2>
 				{:else}
 					<h2 
-						class="text-5xl italic font-normal text-white transition-opacity duration-1000 ease-in"
-						style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400; opacity: {showReserveBelow ? 1 : 0}; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);"
+						class="text-5xl italic font-normal text-white"
+						style="font-family: 'Playfair Display', serif; font-weight: 400; letter-spacing: -0.02em;"
 					>
 						Reserve Below
 					</h2>
@@ -193,9 +187,9 @@ END:VCALENDAR`;
 				<!-- Thank You Message - Premium Design -->
 				<div class="max-w-lg mx-auto px-4">
 					<!-- 1. Confirmation Message -->
-					<div class="mb-20 text-center">
+					<div class="mb-10 text-center">
 						{#if submittedNames.length > 0}
-							<p class="text-xl text-gray-800 font-light tracking-wide leading-relaxed">
+							<p class="text-xl text-gray-800 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
 								{#if submittedNames.length === 1}
 									Thank you, {submittedNames[0]}! We can't wait to celebrate with you.
 								{:else if submittedNames.length === 2}
@@ -205,30 +199,30 @@ END:VCALENDAR`;
 								{/if}
 							</p>
 						{:else}
-							<p class="text-xl text-gray-800 font-light tracking-wide leading-relaxed">
+							<p class="text-xl text-gray-800 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
 								We can't wait to celebrate with you.
 							</p>
 						{/if}
 					</div>
 					
 					<!-- 2. Event Details - Date/Time -->
-					<div class="mb-16 text-center">
-						<p class="text-lg text-gray-800 font-normal tracking-wide">
-							Saturday, July 5 <span class="mx-2 text-gray-300">·</span> 3:00 PM
+					<div class="mb-10">
+						<p class="text-lg text-gray-800 font-normal tracking-wide" style="font-family: 'Inter', sans-serif;">
+							Sunday <span class="mx-2 text-gray-300">·</span> July 5 <span class="mx-2 text-gray-300">·</span> 3:00 PM
 						</p>
 					</div>
 					
 					<!-- 3. Location - Premium Typography -->
-					<div class="mb-20">
+					<div class="mb-12">
 						<button
 							onclick={copyAddress}
 							class="text-left w-full cursor-pointer group transition-opacity hover:opacity-70"
 						>
 							<div class="space-y-3">
-								<p class="text-xl text-gray-900 font-medium tracking-tight">
+								<p class="text-xl text-gray-900 font-medium tracking-tight" style="font-family: 'Playfair Display', serif; font-weight: 500;">
 									Cape Horn Estate
 								</p>
-								<div class="space-y-1 text-gray-700 font-light tracking-wide leading-relaxed">
+								<div class="space-y-1 text-gray-700 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
 									<p class="text-base">29200 SE Larch Mountain Rd</p>
 									<p class="text-base">Corbett, OR 97019</p>
 									<p class="text-sm text-gray-500 mt-3 font-normal">Columbia Gorge</p>
@@ -241,20 +235,36 @@ END:VCALENDAR`;
 						{/if}
 					</div>
 					
-					<!-- 4. Actions - Premium Buttons -->
+					<!-- 4. Registry Button -->
+					<div class="mb-3">
+						<button
+							disabled={!registryUrl}
+							onclick={() => {
+								if (registryUrl) {
+									window.open(registryUrl, '_blank', 'noopener,noreferrer');
+								}
+							}}
+							class="w-full px-8 py-2.5 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-900"
+						>
+							<Gift class="h-4 w-4 text-white/90 group-hover:text-white transition-colors" />
+							<span>View Registry</span>
+						</button>
+					</div>
+					
+					<!-- 5. Actions - Calendar Buttons -->
 					<div class="space-y-3">
 						<button
 							onclick={addToGoogleCalendar}
-							class="w-full px-8 py-3.5 bg-white border border-gray-200/50 text-gray-900 rounded-full hover:bg-gray-50/80 hover:border-gray-300/50 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-normal tracking-wide group"
+							class="w-full px-8 py-2.5 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group"
 						>
-							<Calendar class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+							<Calendar class="h-4 w-4 text-white/90 group-hover:text-white transition-colors" />
 							<span>Add to Google Calendar</span>
 						</button>
 						<button
 							onclick={addToAppleCalendar}
-							class="w-full px-8 py-3.5 bg-white border border-gray-200/50 text-gray-900 rounded-full hover:bg-gray-50/80 hover:border-gray-300/50 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-normal tracking-wide group"
+							class="w-full px-8 py-2.5 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-medium tracking-wide group"
 						>
-							<Calendar class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+							<Calendar class="h-4 w-4 text-white/90 group-hover:text-white transition-colors" />
 							<span>Add to Apple Calendar</span>
 						</button>
 					</div>
