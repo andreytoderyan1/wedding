@@ -168,7 +168,7 @@ END:VCALENDAR`;
 	};
 </script>
 
-<div class="min-h-screen" style="background-color: #2A3220;">
+<div class="min-h-screen" style="background-color: #6B703D;">
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
 	<div class="py-18">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -184,7 +184,7 @@ END:VCALENDAR`;
 				{:else}
 					<h2 
 						class="text-3xl font-normal text-white italic"
-						style="font-family: 'Playfair Display', serif; font-weight: 100; letter-spacing: 0.18em; font-style: italic; transform: scaleX(0.85);"
+						style="font-family: 'Playfair Display', serif; font-weight: 100; letter-spacing: 0.2em; font-style: italic; transform: scaleX(0.85);"
 					>
 						RSVP
 					</h2>
