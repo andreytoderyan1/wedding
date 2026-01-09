@@ -3,7 +3,6 @@
 
 	let names = $state(['']);
 	let submitted = $state(false);
-	let submitting = $state(false);
 	
 	// Google Apps Script URL for form submissions
 	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-B5eHWQ-hT0ev2l69i_B1dBmr_j7CQl72qaBB5g3UwhVgdhlnF-W-epSf2WkZqcPNJA/exec';
@@ -18,46 +17,40 @@
 		}
 	};
 
-	const handleSubmit = async (e: Event) => {
+	const handleSubmit = (e: Event) => {
 		e.preventDefault();
-		submitting = true;
 		
 		const formData = {
 			names: names.filter(name => name.trim() !== '')
 		};
 		
-		try {
-			if (GOOGLE_SCRIPT_URL) {
-				// Option 1: Submit to Google Apps Script
-				const response = await fetch(GOOGLE_SCRIPT_URL, {
-					method: 'POST',
-					mode: 'no-cors', // Required for Google Apps Script
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData)
-				});
-			} else {
-				// Option 2: Submit to SvelteKit API route
-				const response = await fetch('/api/submit-rsvp', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(formData)
-				});
-				
-				if (!response.ok) {
-					throw new Error('Failed to submit RSVP');
-				}
-			}
-			
-			submitted = true;
-		} catch (error) {
-			console.error('Error submitting RSVP:', error);
-			alert('There was an error submitting your RSVP. Please try again.');
-		} finally {
-			submitting = false;
+		// Show thank you message immediately
+		submitted = true;
+		
+		// Submit in the background (fire and forget)
+		if (GOOGLE_SCRIPT_URL) {
+			fetch(GOOGLE_SCRIPT_URL, {
+				method: 'POST',
+				mode: 'no-cors', // Required for Google Apps Script
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData)
+			}).catch(error => {
+				// Silently log errors in background
+				console.error('Background submission error:', error);
+			});
+		} else {
+			fetch('/api/submit-rsvp', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData)
+			}).catch(error => {
+				// Silently log errors in background
+				console.error('Background submission error:', error);
+			});
 		}
 	};
 </script>
@@ -156,10 +149,9 @@
 					<div class="pt-6">
 						<button
 							type="submit"
-							disabled={submitting}
-							class="w-full px-8 py-4 bg-white/90 backdrop-blur-sm border-2 border-white/30 text-gray-800 rounded-xl hover:bg-white transition-all text-lg font-bold hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+							class="w-full px-8 py-4 bg-white/90 backdrop-blur-sm border-2 border-white/30 text-gray-800 rounded-xl hover:bg-white transition-all text-lg font-bold hover:scale-105 flex items-center justify-center gap-2"
 						>
-							{submitting ? 'Submitting...' : 'Submit RSVP'}
+							Submit RSVP
 						</button>
 					</div>
 				</form>
