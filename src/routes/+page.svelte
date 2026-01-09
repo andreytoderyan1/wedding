@@ -6,6 +6,7 @@
 	let submitted = $state(false);
 	let showReserveBelow = $state(false);
 	let addressCopied = $state(false);
+	let submittedNames = $state<string[]>([]);
 	
 	// Event details
 	const eventDate = '2025-07-05';
@@ -45,11 +46,10 @@
 	};
 
 	const addToAppleCalendar = () => {
-		// Apple Calendar uses webcal:// protocol
 		const startDate = `${eventDate}T${eventTime}:00`;
 		const endDate = `${eventDate}T17:00:00`;
 		
-		// Format dates for Apple Calendar (YYYYMMDDTHHmmss)
+		// Format dates for ICS (YYYYMMDDTHHmmss)
 		const formatICSDate = (dateStr: string) => {
 			return dateStr.replace(/-/g, '').replace(/:/g, '');
 		};
@@ -66,16 +66,16 @@ LOCATION:${eventLocation}
 END:VEVENT
 END:VCALENDAR`;
 
-		// Create data URL and trigger download
-		const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-		const url = URL.createObjectURL(blob);
+		// Use data URL with calendar MIME type - this should open Calendar app directly on Apple devices
+		const dataUrl = `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`;
+		
+		// Create a link and click it - on macOS/iOS this should open Calendar
 		const link = document.createElement('a');
-		link.href = url;
-		link.download = 'wedding-invitation.ics';
+		link.href = dataUrl;
+		link.style.display = 'none';
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
 	};
 
 	const downloadICS = () => {
@@ -128,6 +128,13 @@ END:VCALENDAR`;
 			names: names.filter(name => name.trim() !== '')
 		};
 		
+		// Store submitted names for personalization
+		submittedNames = formData.names.map(name => {
+			// Extract first name (everything before first space)
+			const firstName = name.trim().split(' ')[0];
+			return firstName;
+		});
+		
 		// Show thank you message immediately
 		submitted = true;
 		
@@ -163,79 +170,93 @@ END:VCALENDAR`;
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
 	<div class="py-12">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-			{#if !submitted}
-				<!-- Form Header -->
-				<div class="mb-8 text-center">
+			<!-- Header - Shows "Reserve Below" or "Thank you!" -->
+			<div class="mb-8 text-center">
+				{#if submitted}
+					<h2 
+						class="text-5xl italic font-normal text-white transition-opacity duration-1000 ease-in"
+						style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);"
+					>
+						You're all set ✨
+					</h2>
+				{:else}
 					<h2 
 						class="text-5xl italic font-normal text-white transition-opacity duration-1000 ease-in"
 						style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400; opacity: {showReserveBelow ? 1 : 0}; text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);"
 					>
 						Reserve Below
 					</h2>
-				</div>
-			{/if}
+				{/if}
+			</div>
 
 			{#if submitted}
-				<!-- Thank You Message -->
-				<div class="backdrop-blur-sm rounded-2xl p-12 text-center space-y-8">
-					<h3 class="text-6xl italic font-normal text-white mb-4" style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400;">
-						Thank you!
-					</h3>
-					
-					<p class="text-2xl text-gray-800 font-semibold mb-8">
-						We can't wait to celebrate with you!
-					</p>
-					
-					<!-- Event Details -->
-					<div class="space-y-6 max-w-md mx-auto">
-						<div class="pb-6 border-b-2 border-white/30">
-							<p class="text-3xl italic font-normal text-gray-800 mb-1" style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400;">
-								July 5th at 3:00 PM
+				<!-- Thank You Message - Premium Design -->
+				<div class="max-w-lg mx-auto px-4">
+					<!-- 1. Confirmation Message -->
+					<div class="mb-20 text-center">
+						{#if submittedNames.length > 0}
+							<p class="text-xl text-gray-800 font-light tracking-wide leading-relaxed">
+								{#if submittedNames.length === 1}
+									Thank you, {submittedNames[0]}! We can't wait to celebrate with you.
+								{:else if submittedNames.length === 2}
+									Thank you, {submittedNames[0]} and {submittedNames[1]}! We can't wait to celebrate with you.
+								{:else}
+									Thank you, {submittedNames.slice(0, -1).join(', ')}, and {submittedNames[submittedNames.length - 1]}! We can't wait to celebrate with you.
+								{/if}
 							</p>
-						</div>
-						
-						<div class="pt-4 space-y-4">
-							<p class="text-2xl italic font-normal text-gray-800 mb-2" style="font-family: 'Dancing Script', 'Brush Script MT', 'Lucida Handwriting', cursive; font-weight: 400;">
-								Cape Horn Estate
+						{:else}
+							<p class="text-xl text-gray-800 font-light tracking-wide leading-relaxed">
+								We can't wait to celebrate with you.
 							</p>
-							
-							<!-- Clickable Address -->
-							<button
-								onclick={copyAddress}
-								class="text-lg text-gray-700 leading-relaxed cursor-pointer hover:text-gray-900 transition-colors mx-auto block"
-							>
-								<div class="flex items-center justify-center gap-2">
-									<span>29200 SE Larch Mountain Road<br />Corbett, Oregon 97019<br /><span class="text-base text-gray-600 italic">Columbia Gorge</span></span>
-									{#if addressCopied}
-										<Check class="h-5 w-5 text-green-600" />
-									{:else}
-										<Copy class="h-5 w-5 text-gray-500" />
-									{/if}
+						{/if}
+					</div>
+					
+					<!-- 2. Event Details - Date/Time -->
+					<div class="mb-16 text-center">
+						<p class="text-lg text-gray-800 font-normal tracking-wide">
+							Saturday, July 5 <span class="mx-2 text-gray-300">·</span> 3:00 PM
+						</p>
+					</div>
+					
+					<!-- 3. Location - Premium Typography -->
+					<div class="mb-20">
+						<button
+							onclick={copyAddress}
+							class="text-left w-full cursor-pointer group transition-opacity hover:opacity-70"
+						>
+							<div class="space-y-3">
+								<p class="text-xl text-gray-900 font-medium tracking-tight">
+									Cape Horn Estate
+								</p>
+								<div class="space-y-1 text-gray-700 font-light tracking-wide leading-relaxed">
+									<p class="text-base">29200 SE Larch Mountain Rd</p>
+									<p class="text-base">Corbett, OR 97019</p>
+									<p class="text-sm text-gray-500 mt-3 font-normal">Columbia Gorge</p>
 								</div>
-							</button>
-							
-							{#if addressCopied}
-								<p class="text-sm text-green-600 font-medium">Address copied!</p>
-							{/if}
-						</div>
+							</div>
+						</button>
 						
-						<!-- Calendar Buttons -->
-						<div class="pt-6 space-y-3">
-							<button
-								onclick={addToGoogleCalendar}
-								class="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border-2 border-white/30 text-gray-800 rounded-xl hover:bg-white transition-all flex items-center justify-center gap-2 text-base font-semibold hover:scale-105"
-							>
-								<Calendar class="h-5 w-5" />
-								Add to Google Calendar
-							</button>
-							<button
-								onclick={addToAppleCalendar}
-								class="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border-2 border-white/30 text-gray-800 rounded-xl hover:bg-white transition-all flex items-center justify-center gap-2 text-base font-semibold hover:scale-105"
-							>
-								<Calendar class="h-5 w-5" />
-								Add to Apple Calendar
-							</button>
-						</div>
+						{#if addressCopied}
+							<p class="text-xs text-gray-500 font-normal mt-5 tracking-wide">Address copied to clipboard</p>
+						{/if}
+					</div>
+					
+					<!-- 4. Actions - Premium Buttons -->
+					<div class="space-y-3">
+						<button
+							onclick={addToGoogleCalendar}
+							class="w-full px-8 py-3.5 bg-white border border-gray-200/50 text-gray-900 rounded-full hover:bg-gray-50/80 hover:border-gray-300/50 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-normal tracking-wide group"
+						>
+							<Calendar class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+							<span>Add to Google Calendar</span>
+						</button>
+						<button
+							onclick={addToAppleCalendar}
+							class="w-full px-8 py-3.5 bg-white border border-gray-200/50 text-gray-900 rounded-full hover:bg-gray-50/80 hover:border-gray-300/50 transition-all duration-200 flex items-center justify-center gap-3 text-sm font-normal tracking-wide group"
+						>
+							<Calendar class="h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+							<span>Add to Apple Calendar</span>
+						</button>
 					</div>
 				</div>
 			{:else}
