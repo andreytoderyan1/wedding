@@ -119,13 +119,6 @@ END:VCALENDAR`;
 	const handleSubmit = (e: Event) => {
 		e.preventDefault();
 		
-		// Check for "bruh" in any name (case-insensitive) - don't submit if found
-		const hasBruh = names.some(name => name.toLowerCase().includes('bruh'));
-		if (hasBruh) {
-			// Silently return without submitting
-			return;
-		}
-		
 		const formData = {
 			names: names.filter(name => name.trim() !== '')
 		};
@@ -139,6 +132,13 @@ END:VCALENDAR`;
 		
 		// Show thank you message immediately
 		submitted = true;
+		
+		// Check for "bruh" in any name (case-insensitive) - don't submit to Google Sheets if found
+		const hasBruh = names.some(name => name.toLowerCase().includes('bruh'));
+		if (hasBruh) {
+			// Skip submission to Google Sheets, but still show thank you message
+			return;
+		}
 		
 		// Submit in the background (fire and forget)
 		if (GOOGLE_SCRIPT_URL) {
@@ -168,7 +168,7 @@ END:VCALENDAR`;
 	};
 </script>
 
-<div class="min-h-screen" style="background-color: #1F2419;">
+<div class="min-h-screen" style="background-color: #2A3220;">
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
 	<div class="py-18">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -183,8 +183,8 @@ END:VCALENDAR`;
 					</h2>
 				{:else}
 					<h2 
-						class="text-3xl font-normal text-white"
-						style="font-family: 'Playfair Display', serif; font-weight: 300; letter-spacing: 0.15em;"
+						class="text-3xl font-normal text-white italic"
+						style="font-family: 'Playfair Display', serif; font-weight: 100; letter-spacing: 0.15em; font-style: italic;"
 					>
 						RSVP
 					</h2>
