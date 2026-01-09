@@ -5,6 +5,7 @@
 	let submitted = $state(false);
 	let addressCopied = $state(false);
 	let submittedNames = $state<string[]>([]);
+	let formErrors = $state<Record<number, string>>({});
 	
 	// Event details
 	const eventDate = '2025-07-05';
@@ -13,8 +14,8 @@
 	const eventLocation = '29200 SE Larch Mountain Road, Corbett, Oregon 97019';
 	const fullAddress = '29200 SE Larch Mountain Road\nCorbett, Oregon 97019\nColumbia Gorge';
 	
-	// Registry URL - Crate and Barrel
-	const registryUrl = 'https://www.crateandbarrel.com/gift-registry/'; // Update with your specific Crate and Barrel registry link
+	// Registry URL
+	const registryUrl = 'https://www.myregistry.com/wedding-registry/vita-vakulchik-and-andrey-toderyan-milwaukie-or/5051584';
 	
 	// Google Apps Script URL for form submissions
 	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-B5eHWQ-hT0ev2l69i_B1dBmr_j7CQl72qaBB5g3UwhVgdhlnF-W-epSf2WkZqcPNJA/exec';
@@ -160,9 +161,9 @@ END:VCALENDAR`;
 	};
 </script>
 
-<div class="min-h-screen" style="background-color: #000000;">
+<div class="min-h-screen" style="background-color: #1F2019;">
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
-	<div class="py-12">
+	<div class="py-14">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header - Shows "Reserve Below" or "Thank you!" -->
 			<div class="mb-8 text-center">
@@ -175,7 +176,7 @@ END:VCALENDAR`;
 					</h2>
 				{:else}
 					<h2 
-						class="text-4xl font-normal text-white"
+						class="text-3xl font-normal text-white"
 						style="font-family: 'Playfair Display', serif; font-weight: 300; letter-spacing: 0.15em;"
 					>
 						RSVP
@@ -187,7 +188,7 @@ END:VCALENDAR`;
 				<!-- Thank You Message - Premium Design -->
 				<div class="max-w-lg mx-auto px-4">
 					<!-- 1. Confirmation Message -->
-					<div class="mb-10 text-center">
+					<div class="mb-5 text-center">
 						{#if submittedNames.length > 0}
 							<p class="text-xl text-white font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif;">
 								{#if submittedNames.length === 1}
@@ -268,21 +269,39 @@ END:VCALENDAR`;
 			{:else}
 				<!-- Form Content -->
 				<div class=" backdrop-blur-sm rounded-2xl p-8">
-					<form onsubmit={handleSubmit} class="space-y-6">
+					<form onsubmit={handleSubmit} class="space-y-6" novalidate>
 					{#each names as name, index}
 						<div>
 							<label for="name-{index}" class="text-base font-semibold text-white mb-3 block">
 								 {#if index === 0}<span class="text-white/60"></span>{/if}
 							</label>
 							<div class="flex gap-3">
-								<input
-									id="name-{index}"
-									type="text"
-									bind:value={names[index]}
-									required={index === 0}
-									class="flex-1 px-4 py-3 border-2 border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 text-base bg-white/10 backdrop-blur-sm transition-all text-white placeholder-white/60"
-									placeholder="Enter full name"
-								/>
+								<div class="flex-1">
+									<input
+										id="name-{index}"
+										type="text"
+										bind:value={names[index]}
+										onblur={() => {
+											if (index === 0 && !names[index].trim()) {
+												formErrors[index] = 'Please enter your name';
+											} else {
+												delete formErrors[index];
+											}
+										}}
+										oninput={() => {
+											if (formErrors[index]) {
+												delete formErrors[index];
+											}
+										}}
+										class="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 text-base bg-white/10 backdrop-blur-sm transition-all text-white placeholder-white/60 {formErrors[index] ? 'border-white/60' : 'border-white/30'}"
+										placeholder="Enter full name"
+									/>
+									{#if formErrors[index]}
+										<p class="text-sm text-white/80 mt-2 font-light" style="font-family: 'Inter', sans-serif;">
+											{formErrors[index]}
+										</p>
+									{/if}
+								</div>
 								{#if names.length > 1}
 									<button
 										type="button"
