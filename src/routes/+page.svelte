@@ -175,8 +175,8 @@ END:VCALENDAR`;
 					</h2>
 				{:else}
 					<h2 
-						class="text-5xl italic font-normal text-white"
-						style="font-family: 'Playfair Display', serif; font-weight: 400; letter-spacing: -0.02em;"
+						class="text-4xl font-normal text-white"
+						style="font-family: 'Playfair Display', serif; font-weight: 300; letter-spacing: 0.15em;"
 					>
 						RSVP
 					</h2>
