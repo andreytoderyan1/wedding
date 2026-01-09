@@ -5,8 +5,8 @@
 	let submitted = $state(false);
 	let submitting = $state(false);
 	
-	// Replace this with your Google Apps Script URL after setup
-	const GOOGLE_SCRIPT_URL = ''; // e.g., 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'
+	// Google Apps Script URL for form submissions
+	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-B5eHWQ-hT0ev2l69i_B1dBmr_j7CQl72qaBB5g3UwhVgdhlnF-W-epSf2WkZqcPNJA/exec';
 
 	const addPerson = () => {
 		names = [...names, ''];
