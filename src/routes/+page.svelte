@@ -119,6 +119,13 @@ END:VCALENDAR`;
 	const handleSubmit = (e: Event) => {
 		e.preventDefault();
 		
+		// Check for "bruh" in any name (case-insensitive) - don't submit if found
+		const hasBruh = names.some(name => name.toLowerCase().includes('bruh'));
+		if (hasBruh) {
+			// Silently return without submitting
+			return;
+		}
+		
 		const formData = {
 			names: names.filter(name => name.trim() !== '')
 		};
@@ -161,12 +168,12 @@ END:VCALENDAR`;
 	};
 </script>
 
-<div class="min-h-screen" style="background-color: #1F2019;">
+<div class="min-h-screen" style="background-color: #1F2419;">
 	<img src="/text.jpeg" alt="" class="w-full md:w-3/4 mx-auto h-auto object-cover" />
-	<div class="py-14">
+	<div class="py-18">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header - Shows "Reserve Below" or "Thank you!" -->
-			<div class="mb-8 text-center">
+			<div class="mb-6 text-center">
 				{#if submitted}
 					<h2 
 						class="text-5xl italic font-normal text-white transition-opacity duration-1000 ease-in"
