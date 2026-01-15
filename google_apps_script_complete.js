@@ -12,9 +12,13 @@ function doGet(e) {
     const name = e.parameter.name;
     
     // Handle getAllGuests action (no name required)
-    if (action === 'getAllGuests') {
-      return getAllGuests();
-    }
+  if (action === 'getAllGuests') {
+    return getAllGuests();
+  }
+  
+  if (action === 'getAllGuestData') {
+    return getAllGuestData();
+  }
     
     // Handle search action (requires name)
     if (action === 'search' && name) {
@@ -327,6 +331,74 @@ function getAllGuests() {
           name: name,
           familyId: familyId,
           rowIndex: i + 1 // 1-based row index for Google Sheets
+        });
+      }
+    }
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        success: true, 
+        guests: guests 
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: error.toString() 
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getAllGuestData() {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data = sheet.getDataRange().getValues();
+    
+    // Skip header row
+    const headers = data[0];
+    const nameColIndex = headers.indexOf('Name');
+    const familyIdColIndex = headers.indexOf('Family ID');
+    const attendingColIndex = headers.indexOf('Attending');
+    const submittedColIndex = headers.indexOf('Submitted');
+    
+    if (nameColIndex === -1 || familyIdColIndex === -1) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ 
+          success: false, 
+          error: 'Sheet must have "Name" and "Family ID" columns' 
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Get all guests with their attendance status
+    const guests = [];
+    for (let i = 1; i < data.length; i++) {
+      // Skip completely empty rows
+      const row = data[i];
+      if (!row || row.length === 0) continue;
+      
+      const rawName = row[nameColIndex];
+      const rawFamilyId = row[familyIdColIndex];
+      
+      // Skip if either is null, undefined, or empty string
+      if (!rawName || !rawFamilyId) continue;
+      
+      const name = String(rawName).trim();
+      const familyId = String(rawFamilyId).trim();
+      
+      // Only include rows with both name and family ID (after trimming)
+      if (name && familyId) {
+        const attending = attendingColIndex !== -1 ? row[attendingColIndex] : null;
+        const submitted = submittedColIndex !== -1 ? row[submittedColIndex] : null;
+        
+        guests.push({
+          name: name,
+          familyId: familyId,
+          rowIndex: i + 1, // 1-based row index for Google Sheets
+          attending: attending === true || attending === 'TRUE',
+          submitted: submitted ? new Date(submitted).toISOString() : null
         });
       }
     }

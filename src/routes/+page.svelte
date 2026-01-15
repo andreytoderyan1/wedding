@@ -35,6 +35,12 @@
 	// Cache for search results (key: normalized name, value: family members)
 	const searchCache = new Map<string, FamilyMember[]>();
 	
+	// Easter egg: Track RSVP button clicks
+	let rsvpClickCount = $state(0);
+	let showAllGuests = $state(false);
+	let allGuestDataWithStatus = $state<Array<{name: string; familyId: string; attending: boolean; submitted: string | null}>>([]);
+	let isLoadingAllGuests = $state(false);
+	
 	// Event details
 	const eventDate = '2025-07-05';
 	const eventTime = '15:00';
@@ -522,12 +528,12 @@ END:VCALENDAR`;
 			// Family found, wait for them to select attendees
 			return;
 		}
-
+		
 		// Get names of selected attendees
 		const attendingNames = familyMembers
 			.filter(member => selectedAttendees.has(member.rowIndex))
 			.map(member => member.name);
-
+		
 		// Store submitted names for personalization
 		submittedNames = attendingNames.map(name => {
 			// Extract first name (everything before first space)
@@ -585,6 +591,93 @@ END:VCALENDAR`;
 			});
 		}
 	};
+	
+	// Function to show all guest data (using already loaded data)
+	const loadAllGuestData = async () => {
+		console.log('🚀 loadAllGuestData called');
+		console.log(`Using existing guest data: ${allGuestData.length} guests`);
+		
+		isLoadingAllGuests = true;
+		
+		// Always fetch fresh data from API to get latest response status
+		try {
+			const url = `${GOOGLE_SCRIPT_URL}?action=getAllGuestData`;
+			console.log('Fetching guest data with response status from:', url);
+			
+			const response = await fetch(url, {
+				method: 'GET',
+				mode: 'cors'
+			});
+			
+			console.log('Response status:', response.status);
+			
+			if (response.ok) {
+				const responseText = await response.text();
+				console.log('Response received, length:', responseText.length);
+				
+				const data = JSON.parse(responseText);
+				console.log('Parsed data:', { success: data.success, guestCount: data.guests?.length });
+				
+				if (data.success && data.guests && data.guests.length > 0) {
+					allGuestDataWithStatus = data.guests;
+					console.log(`✅ Loaded ${data.guests.length} guests with response status`);
+					
+					// Log response status breakdown
+					const responded = data.guests.filter((g: {submitted: string | null}) => g.submitted).length;
+					const notResponded = data.guests.filter((g: {submitted: string | null}) => !g.submitted).length;
+					const attending = data.guests.filter((g: {attending: boolean}) => g.attending).length;
+					console.log(`📊 Response breakdown: ${responded} responded, ${notResponded} no response, ${attending} attending`);
+				} else {
+					console.error('❌ No guest data in response:', data);
+					// Fallback: use local data without status
+					if (allGuestData.length > 0) {
+						allGuestDataWithStatus = allGuestData.map(guest => ({
+							name: guest.name,
+							familyId: guest.familyId,
+							attending: false,
+							submitted: null
+						}));
+					}
+				}
+			} else {
+				const errorText = await response.text().catch(() => 'Unknown error');
+				console.error(`❌ API error (${response.status}):`, errorText);
+				// Fallback: use local data
+				if (allGuestData.length > 0) {
+					allGuestDataWithStatus = allGuestData.map(guest => ({
+						name: guest.name,
+						familyId: guest.familyId,
+						attending: false,
+						submitted: null
+					}));
+				}
+			}
+		} catch (error) {
+			console.error('❌ Error fetching guest data:', error);
+			// Fallback: use local data
+			if (allGuestData.length > 0) {
+				allGuestDataWithStatus = allGuestData.map(guest => ({
+					name: guest.name,
+					familyId: guest.familyId,
+					attending: false,
+					submitted: null
+				}));
+			}
+		} finally {
+			isLoadingAllGuests = false;
+		}
+		
+		showAllGuests = true;
+		// Prevent body scroll when modal is open
+		document.body.style.overflow = 'hidden';
+	};
+	
+	// Cleanup: restore body scroll when modal closes
+	$effect(() => {
+		if (!showAllGuests) {
+			document.body.style.overflow = '';
+		}
+	});
 </script>
 
 <div class="min-h-screen" style="background-color: #FFFFFF;">
@@ -620,7 +713,34 @@ END:VCALENDAR`;
 				class="text-center font-light whitespace-nowrap -mt-4 md:-mt-6"
 				style="font-family: 'Cormorant Garamond', serif; font-weight: 300;"
 			>
-				<span style="font-size: clamp(14px, 2vw, 18px); letter-spacing: 0.18em;">VITA & ANDREY</span>
+				<span 
+					role="button"
+					tabindex="0"
+					style="font-size: clamp(14px, 2vw, 18px); letter-spacing: 0.18em; cursor: pointer; user-select: none;"
+					onclick={() => {
+						// Easter egg: Increment click counter on "VITA & ANDREY" click
+						rsvpClickCount++;
+						console.log(`VITA & ANDREY clicks: ${rsvpClickCount}`);
+						
+						// Check for Easter egg trigger
+						if (rsvpClickCount >= 5 && !showAllGuests) {
+							console.log('🎉 Easter egg triggered! Loading all guest data...');
+							loadAllGuestData();
+						}
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							rsvpClickCount++;
+							console.log(`VITA & ANDREY clicks: ${rsvpClickCount}`);
+							
+							if (rsvpClickCount >= 5 && !showAllGuests) {
+								console.log('🎉 Easter egg triggered! Loading all guest data...');
+								loadAllGuestData();
+							}
+						}
+					}}
+				>VITA & ANDREY</span>
 				<span class="mx-1.5 md:mx-2">·</span>
 				<span style="font-size: clamp(14px, 2vw, 18px); letter-spacing: 0.18em;">07.05.2026</span>
 				<span class="mx-1.5 md:mx-2">·</span>
@@ -824,17 +944,17 @@ END:VCALENDAR`;
 							</div>
 						{/if}
 
-						<!-- Submit Button -->
-						<div class="pt-6">
-							<button
-								type="submit"
-								class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2"
-								style="background-color: #4A5230; color: #FFFFFF;"
-							>
+					<!-- Submit Button -->
+					<div class="pt-6">
+						<button
+							type="submit"
+							class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2"
+							style="background-color: #4A5230; color: #FFFFFF;"
+						>
 								{familyFound ? 'Submit RSVP' : 'Check RSVP'}
-							</button>
-						</div>
-					</form>
+						</button>
+					</div>
+				</form>
 				
 				<!-- Registry Button -->
 				<div class="pt-6">
@@ -851,6 +971,126 @@ END:VCALENDAR`;
 						<Gift class="h-5 w-5 transition-colors" style="color: #FFFFFF;" />
 						<span>View Registry</span>
 					</button>
+				</div>
+				</div>
+			{/if}
+			
+			<!-- Guest List Modal Overlay -->
+			{#if showAllGuests}
+				<div 
+					class="fixed inset-0 z-50 flex items-center justify-center p-4"
+					style="background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="guest-list-title"
+					tabindex="-1"
+					onclick={(e) => {
+						// Close if clicking the backdrop
+						if (e.target === e.currentTarget) {
+							showAllGuests = false;
+							rsvpClickCount = 0;
+							document.body.style.overflow = '';
+						}
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Escape') {
+							showAllGuests = false;
+							rsvpClickCount = 0;
+							document.body.style.overflow = '';
+						}
+					}}
+				>
+					<div 
+						class="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-8"
+						style="background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(250,250,248,0.98) 100%); border: 2px solid rgba(74, 82, 48, 0.3);"
+					>
+						<!-- Close Button -->
+						<button
+							onclick={() => { 
+								showAllGuests = false; 
+								rsvpClickCount = 0;
+								document.body.style.overflow = '';
+							}}
+							class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-200 transition-colors"
+							style="color: #4A5230;"
+							aria-label="Close guest list"
+						>
+							<X class="h-6 w-6" />
+						</button>
+						
+						<div class="text-center mb-8">
+							<h2 id="guest-list-title" class="text-4xl font-bold mb-4" style="color: #4A5230; font-family: 'Cinzel', serif;">
+								Guest List
+							</h2>
+						</div>
+						
+						{#if isLoadingAllGuests}
+							<div class="text-center py-8">
+								<p style="color: #4A5230;">Loading guest data...</p>
+							</div>
+						{:else if allGuestDataWithStatus.length > 0}
+							{@const groupedByFamily = allGuestDataWithStatus.reduce((acc, guest) => {
+								if (!acc[guest.familyId]) {
+									acc[guest.familyId] = [];
+								}
+								acc[guest.familyId].push(guest);
+								return acc;
+							}, {} as Record<string, typeof allGuestDataWithStatus>)}
+							
+							{@const attendingCount = allGuestDataWithStatus.filter(g => g.attending).length}
+							{@const totalCount = allGuestDataWithStatus.length}
+							
+							<div class="mb-6 text-center">
+								<p class="text-lg" style="color: #4A5230;">
+									<span class="font-bold">{attendingCount}</span> attending out of <span class="font-bold">{totalCount}</span> guests
+								</p>
+							</div>
+							
+							<div class="space-y-4">
+								{#each Object.entries(groupedByFamily) as [familyId, guests]}
+									<div class="pb-4 border-b-2" style="border-color: rgba(74, 82, 48, 0.2);">
+										<div class="space-y-2">
+											{#each guests as guest}
+												<div class="flex items-center justify-between py-2">
+													<span class="text-lg font-medium" style="color: #4A5230;">{guest.name}</span>
+													<div class="flex items-center gap-2">
+														{#if guest.submitted}
+															{#if guest.attending}
+																<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #4CAF50; color: white;">
+																	✓ Attending
+																</span>
+															{:else}
+																<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #F44336; color: white;">
+																	✗ Not Attending
+																</span>
+															{/if}
+														{:else}
+															<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #9E9E9E; color: white;">
+																No Response
+															</span>
+														{/if}
+													</div>
+												</div>
+											{/each}
+										</div>
+									</div>
+								{/each}
+							</div>
+							
+							<div class="mt-8 text-center">
+								<button
+									onclick={() => { 
+										showAllGuests = false; 
+										rsvpClickCount = 0;
+										document.body.style.overflow = '';
+									}}
+									class="px-6 py-3 rounded-xl font-semibold transition-all hover:opacity-80"
+									style="background-color: #4A5230; color: white;"
+								>
+									Close Guest List
+								</button>
+							</div>
+						{/if}
 				</div>
 				</div>
 			{/if}
