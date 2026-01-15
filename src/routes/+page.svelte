@@ -858,7 +858,7 @@ END:VCALENDAR`;
 						<!-- Name Input -->
 						<div>
 							<label for="name-input" class="text-base font-semibold mb-3 block" style="color: #4A5230;">
-								Enter your first name and last name (or part of it) to find your family
+								Enter your first name and last name to find your family
 							</label>
 							<div class="flex gap-3">
 								<div class="flex-1">
