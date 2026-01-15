@@ -53,7 +53,8 @@
 		try {
 			const startTime = performance.now();
 			const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllGuests`, {
-				method: 'GET'
+				method: 'GET',
+				mode: 'cors'
 			});
 
 			if (response.ok) {
@@ -61,12 +62,16 @@
 				if (data.success && data.guests) {
 					allGuestData = data.guests;
 					const loadTime = performance.now() - startTime;
-					console.log(`Loaded ${data.guests.length} guests in ${loadTime.toFixed(0)}ms`);
+					console.log(`✅ Loaded ${data.guests.length} guests in ${loadTime.toFixed(0)}ms - searches will be instant!`);
+				} else {
+					console.warn('⚠️ Guest data load returned no data, will use API search');
 				}
+			} else {
+				console.warn('⚠️ Failed to load guest data (response not ok), will use API search');
 			}
 		} catch (error) {
-			console.error('Failed to load guest data:', error);
-			// Continue anyway - will fall back to API search
+			// Silently fail - will use API search as fallback
+			console.warn('⚠️ Could not load guest data (will use API search):', error instanceof Error ? error.message : 'Unknown error');
 		} finally {
 			isLoadingGuestData = false;
 		}
