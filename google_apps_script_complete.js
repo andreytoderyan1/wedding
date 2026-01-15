@@ -1,26 +1,41 @@
 function doGet(e) {
-  // Handle GET requests for searching families
-  // Check if e and e.parameter exist to avoid errors when testing
-  if (!e || !e.parameter) {
+  // Handle GET requests for searching families and getting all guests
+  try {
+    // Check if e and e.parameter exist to avoid errors when testing
+    if (!e || !e.parameter) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ success: false, error: 'Invalid request - no parameters provided' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    const action = e.parameter.action;
+    const name = e.parameter.name;
+    
+    // Handle getAllGuests action (no name required)
+    if (action === 'getAllGuests') {
+      return getAllGuests();
+    }
+    
+    // Handle search action (requires name)
+    if (action === 'search' && name) {
+      return searchFamily(name);
+    }
+    
+    // Invalid request
     return ContentService
-      .createTextOutput(JSON.stringify({ success: false, error: 'Invalid request - no parameters provided' }))
+      .createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: 'Invalid request. Use action=getAllGuests or action=search&name=...'
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: 'Error processing request: ' + error.toString()
+      }))
       .setMimeType(ContentService.MimeType.JSON);
   }
-  
-  const action = e.parameter.action;
-  const name = e.parameter.name;
-  
-  if (action === 'search' && name) {
-    return searchFamily(name);
-  }
-  
-  if (action === 'getAllGuests') {
-    return getAllGuests();
-  }
-  
-  return ContentService
-    .createTextOutput(JSON.stringify({ success: false, error: 'Invalid request - action and name required' }))
-    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
@@ -91,16 +106,20 @@ function searchFamily(searchName) {
     const searchLen = searchFirstNameLower.length + searchLastNameLower.length;
     
     for (let i = 1; i < data.length; i++) {
-      // Fast path: check if name column exists
-      const rawName = data[i][nameColIndex];
+      // Skip completely empty rows
+      const row = data[i];
+      if (!row || row.length === 0) continue;
+      
+      // Fast path: check if name column exists and is not empty
+      const rawName = row[nameColIndex];
       if (!rawName) continue;
       
       // Quick length check before expensive operations
-      const nameStr = String(rawName);
-      if (nameStr.length < searchLen) continue;
+      const nameStr = String(rawName).trim();
+      if (!nameStr || nameStr.length < searchLen) continue;
       
       // Normalize efficiently
-      const rowName = nameStr.trim().toLowerCase();
+      const rowName = nameStr.toLowerCase();
       const spaceIndex = rowName.indexOf(' ');
       
       // Must have at least one space (first and last name)
@@ -117,8 +136,11 @@ function searchFamily(searchName) {
       // Final check: last name must match
       if (rowLastName === searchLastNameLower) {
         foundRowIndex = i;
-        foundFamilyId = String(data[i][familyIdColIndex] || '').trim();
-        break; // Found match, exit immediately
+        const rawFamilyId = row[familyIdColIndex];
+        foundFamilyId = rawFamilyId ? String(rawFamilyId).trim() : null;
+        if (foundFamilyId) {
+          break; // Found match, exit immediately
+        }
       }
     }
     
@@ -134,10 +156,23 @@ function searchFamily(searchName) {
     // Find all family members with the same Family ID
     const familyMembers = [];
     for (let i = 1; i < data.length; i++) {
-      const rowFamilyId = String(data[i][familyIdColIndex] || '').trim();
-      if (rowFamilyId === foundFamilyId) {
+      // Skip completely empty rows
+      const row = data[i];
+      if (!row || row.length === 0) continue;
+      
+      const rawFamilyId = row[familyIdColIndex];
+      const rawName = row[nameColIndex];
+      
+      // Skip if family ID or name is missing
+      if (!rawFamilyId || !rawName) continue;
+      
+      const rowFamilyId = String(rawFamilyId).trim();
+      const rowName = String(rawName).trim();
+      
+      // Only include if both are non-empty and family ID matches
+      if (rowFamilyId && rowName && rowFamilyId === foundFamilyId) {
         familyMembers.push({
-          name: String(data[i][nameColIndex] || '').trim(),
+          name: rowName,
           familyId: foundFamilyId,
           rowIndex: i + 1 // 1-based row index for Google Sheets
         });
@@ -221,7 +256,14 @@ function updateAttendance(attendees) {
       
       // Find all family members and set non-attendees to FALSE and update submitted timestamp
       for (let i = 1; i < data.length; i++) {
-        const rowFamilyId = String(data[i][familyIdColIndex] || '').trim();
+        // Skip completely empty rows
+        const row = data[i];
+        if (!row || row.length === 0) continue;
+        
+        const rawFamilyId = row[familyIdColIndex];
+        if (!rawFamilyId) continue;
+        
+        const rowFamilyId = String(rawFamilyId).trim();
         if (rowFamilyId === familyId && !attendingRowIndices.has(i + 1)) {
           const rowIndex = i + 1;
           sheet.getRange(rowIndex, attendingColIndex + 1).setValue(false);
@@ -265,10 +307,21 @@ function getAllGuests() {
     // Get all guests (skip header row)
     const guests = [];
     for (let i = 1; i < data.length; i++) {
-      const name = String(data[i][nameColIndex] || '').trim();
-      const familyId = String(data[i][familyIdColIndex] || '').trim();
+      // Skip completely empty rows
+      const row = data[i];
+      if (!row || row.length === 0) continue;
       
-      // Only include rows with both name and family ID
+      // Get name and family ID, handling null/undefined/empty values
+      const rawName = row[nameColIndex];
+      const rawFamilyId = row[familyIdColIndex];
+      
+      // Skip if either is null, undefined, or empty string
+      if (!rawName || !rawFamilyId) continue;
+      
+      const name = String(rawName).trim();
+      const familyId = String(rawFamilyId).trim();
+      
+      // Only include rows with both name and family ID (after trimming)
       if (name && familyId) {
         guests.push({
           name: name,

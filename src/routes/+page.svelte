@@ -46,7 +46,7 @@
 	const registryUrl = 'https://www.myregistry.com/wedding-registry/vita-vakulchik-and-andrey-toderyan-milwaukie-or/5051584';
 	
 	// Google Apps Script URL for form submissions
-	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-B5eHWQ-hT0ev2l69i_B1dBmr_j7CQl72qaBB5g3UwhVgdhlnF-W-epSf2WkZqcPNJA/exec';
+	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYG5uqcjNiIVQgjOBUVJ9gkYQTBI-cEIprojBK56O2O4vD3GvgwQEQi5yGTlfGc_XLfQ/exec';
 
 	// Load all guest data on page mount
 	onMount(async () => {
