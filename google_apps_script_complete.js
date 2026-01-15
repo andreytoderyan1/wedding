@@ -187,7 +187,7 @@ function updateAttendance(attendees) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    // Get current timestamp
+    // Get current timestamp (with date and time)
     const timestamp = new Date();
     
     // Get family ID to update all family members' submitted timestamp
@@ -208,7 +208,8 @@ function updateAttendance(attendees) {
       if (rowIndex > 0 && rowIndex <= data.length) {
         // Set attending status (TRUE for attending, FALSE for not attending)
         sheet.getRange(rowIndex, attendingColIndex + 1).setValue(attendee.attending ? true : false);
-        // Set submitted timestamp
+        
+        // Set submitted timestamp (date and time)
         sheet.getRange(rowIndex, submittedColIndex + 1).setValue(timestamp);
       }
     }
@@ -222,8 +223,9 @@ function updateAttendance(attendees) {
       for (let i = 1; i < data.length; i++) {
         const rowFamilyId = String(data[i][familyIdColIndex] || '').trim();
         if (rowFamilyId === familyId && !attendingRowIndices.has(i + 1)) {
-          sheet.getRange(i + 1, attendingColIndex + 1).setValue(false);
-          sheet.getRange(i + 1, submittedColIndex + 1).setValue(timestamp);
+          const rowIndex = i + 1;
+          sheet.getRange(rowIndex, attendingColIndex + 1).setValue(false);
+          sheet.getRange(rowIndex, submittedColIndex + 1).setValue(timestamp);
         }
       }
     }

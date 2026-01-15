@@ -52,26 +52,63 @@
 	onMount(async () => {
 		try {
 			const startTime = performance.now();
-			const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllGuests`, {
+			console.log('🔄 Loading guest data from Google Sheets...');
+			
+			const url = `${GOOGLE_SCRIPT_URL}?action=getAllGuests`;
+			console.log('Fetching from:', url);
+			
+			const response = await fetch(url, {
 				method: 'GET',
-				mode: 'cors'
+				mode: 'cors',
+				credentials: 'omit',
+				headers: {
+					'Accept': 'application/json'
+				}
 			});
 
+			console.log('Response status:', response.status, response.statusText);
+			console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
 			if (response.ok) {
-				const data = await response.json() as { success?: boolean; guests?: GuestData[] };
-				if (data.success && data.guests) {
+				const responseText = await response.text();
+				console.log('Raw response length:', responseText.length);
+				console.log('Raw response (first 500 chars):', responseText.substring(0, 500));
+				
+				let data: { success?: boolean; guests?: GuestData[]; error?: string };
+				try {
+					data = JSON.parse(responseText);
+					console.log('Parsed data:', { success: data.success, guestCount: data.guests?.length, error: data.error });
+				} catch (parseError) {
+					console.error('❌ Failed to parse JSON:', parseError);
+					console.error('Response text:', responseText);
+					console.warn('⚠️ Could not parse guest data response, will use API search');
+					return;
+				}
+				
+				if (data.success && data.guests && data.guests.length > 0) {
 					allGuestData = data.guests;
 					const loadTime = performance.now() - startTime;
 					console.log(`✅ Loaded ${data.guests.length} guests in ${loadTime.toFixed(0)}ms - searches will be instant!`);
+				} else if (data.success && data.guests && data.guests.length === 0) {
+					console.warn('⚠️ Guest data loaded but empty (0 guests found)');
 				} else {
-					console.warn('⚠️ Guest data load returned no data, will use API search');
+					console.warn('⚠️ Guest data load returned no data:', data.error || 'Unknown error');
+					console.warn('Full response:', data);
 				}
 			} else {
-				console.warn('⚠️ Failed to load guest data (response not ok), will use API search');
+				const errorText = await response.text().catch(() => 'Unknown error');
+				console.error(`❌ Failed to load guest data (${response.status} ${response.statusText}):`, errorText);
+				console.warn('⚠️ Will use API search as fallback');
 			}
 		} catch (error) {
-			// Silently fail - will use API search as fallback
-			console.warn('⚠️ Could not load guest data (will use API search):', error instanceof Error ? error.message : 'Unknown error');
+			console.error('❌ Error loading guest data:', error);
+			if (error instanceof TypeError && error.message.includes('fetch')) {
+				console.error('This might be a CORS issue. Make sure:');
+				console.error('1. Google Apps Script is deployed as "Anyone" (not "Anyone with Google account")');
+				console.error('2. The script URL is correct');
+				console.error('3. Your internet connection is working');
+			}
+			console.warn('⚠️ Will use API search as fallback');
 		} finally {
 			isLoadingGuestData = false;
 		}
