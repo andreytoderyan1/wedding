@@ -52,18 +52,19 @@
 	const registryUrl = 'https://www.myregistry.com/wedding-registry/vita-vakulchik-and-andrey-toderyan-milwaukie-or/5051584';
 	
 	// Google Apps Script URL for form submissions
-	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYG5uqcjNiIVQgjOBUVJ9gkYQTBI-cEIprojBK56O2O4vD3GvgwQEQi5yGTlfGc_XLfQ/exec';
+	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLasckvBTaFN2uI2iKXxQ8tyUe7goF28HamUGf0V5pYWB1GjAbb5515H5t8Wy2hLycHQ/exec';
 
-	// Load all guest data on page mount
+	// Load all guest data on page mount (with status)
 	onMount(async () => {
 		try {
 			const startTime = performance.now();
-			console.log('🔄 Loading guest data from Google Sheets...');
+			console.log('🔄 Loading guest data with status from Google Sheets...');
 			
-			const url = `${GOOGLE_SCRIPT_URL}?action=getAllGuests`;
+			// Try getAllGuestData first (has status), fallback to getAllGuests if not available
+			let url = `${GOOGLE_SCRIPT_URL}?action=getAllGuestData`;
 			console.log('Fetching from:', url);
 			
-			const response = await fetch(url, {
+			let response = await fetch(url, {
 				method: 'GET',
 				mode: 'cors',
 				credentials: 'omit',
@@ -72,39 +73,94 @@
 				}
 			});
 
-			console.log('Response status:', response.status, response.statusText);
-			console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-			if (response.ok) {
-				const responseText = await response.text();
-				console.log('Raw response length:', responseText.length);
-				console.log('Raw response (first 500 chars):', responseText.substring(0, 500));
+			let responseText = await response.text();
+			let data: { success?: boolean; guests?: Array<{name: string; familyId: string; rowIndex: number; attending?: boolean; submitted?: string | null}>; error?: string };
+			
+			try {
+				data = JSON.parse(responseText);
+			} catch (parseError) {
+				console.error('❌ Failed to parse JSON:', parseError);
+				console.warn('⚠️ Will use API search as fallback');
+				return;
+			}
+			
+			// Check if we got status data
+			const hasStatusData = data.success && data.guests && data.guests.length > 0 && 
+				(data.guests[0].attending !== undefined || data.guests[0].submitted !== undefined);
+			
+			// If getAllGuestData failed or doesn't have status, try getAllGuests as fallback
+			if (!data.success || data.error || !hasStatusData) {
+				if (!hasStatusData && data.success) {
+					console.log('⚠️ getAllGuestData returned data but no status fields, trying getAllGuests...');
+				} else {
+					console.log('⚠️ getAllGuestData not available, trying getAllGuests...');
+				}
 				
-				let data: { success?: boolean; guests?: GuestData[]; error?: string };
+				url = `${GOOGLE_SCRIPT_URL}?action=getAllGuests`;
+				response = await fetch(url, {
+					method: 'GET',
+					mode: 'cors',
+					credentials: 'omit',
+					headers: {
+						'Accept': 'application/json'
+					}
+				});
+				
+				responseText = await response.text();
 				try {
 					data = JSON.parse(responseText);
-					console.log('Parsed data:', { success: data.success, guestCount: data.guests?.length, error: data.error });
+					console.log('⚠️ Using getAllGuests (no status data available - redeploy script with getAllGuestData for status)');
 				} catch (parseError) {
 					console.error('❌ Failed to parse JSON:', parseError);
-					console.error('Response text:', responseText);
-					console.warn('⚠️ Could not parse guest data response, will use API search');
+					console.warn('⚠️ Will use API search as fallback');
 					return;
 				}
+			}
+
+			if (response.ok && data.success && data.guests && data.guests.length > 0) {
+				// Store both the basic guest data and the full data with status
+				allGuestData = data.guests.map(g => ({
+					name: g.name,
+					familyId: g.familyId,
+					rowIndex: g.rowIndex
+				}));
 				
-				if (data.success && data.guests && data.guests.length > 0) {
-					allGuestData = data.guests;
-					const loadTime = performance.now() - startTime;
-					console.log(`✅ Loaded ${data.guests.length} guests in ${loadTime.toFixed(0)}ms - searches will be instant!`);
-				} else if (data.success && data.guests && data.guests.length === 0) {
-					console.warn('⚠️ Guest data loaded but empty (0 guests found)');
+				// Store the full data with status (check if status fields exist)
+				const hasStatus = data.guests[0] && (data.guests[0].attending !== undefined || data.guests[0].submitted !== undefined);
+				
+				allGuestDataWithStatus = data.guests.map(g => {
+					let attending = false;
+					if (hasStatus && g.attending !== undefined) {
+						const att: any = g.attending;
+						attending = att === true || att === 'TRUE' || String(att).toUpperCase() === 'TRUE';
+					}
+					return {
+						name: g.name,
+						familyId: g.familyId,
+						attending: attending,
+						submitted: hasStatus ? (g.submitted || null) : null
+					};
+				});
+				
+				const loadTime = performance.now() - startTime;
+				console.log(`✅ Loaded ${data.guests.length} guests in ${loadTime.toFixed(0)}ms - searches will be instant!`);
+				
+				// Log status breakdown if we have status data
+				if (hasStatus) {
+					const responded = data.guests.filter(g => g.submitted).length;
+					const attending = data.guests.filter(g => {
+						const att: any = g.attending;
+						return att === true || att === 'TRUE' || String(att).toUpperCase() === 'TRUE';
+					}).length;
+					console.log(`📊 Status: ${attending} attending, ${responded} responded`);
 				} else {
-					console.warn('⚠️ Guest data load returned no data:', data.error || 'Unknown error');
-					console.warn('Full response:', data);
+					console.warn('⚠️ No status data available - all guests will show as "Pending"');
+					console.warn('⚠️ Redeploy Google Apps Script with getAllGuestData function to see attendance status');
 				}
+			} else if (data.success && data.guests && data.guests.length === 0) {
+				console.warn('⚠️ Guest data loaded but empty (0 guests found)');
 			} else {
-				const errorText = await response.text().catch(() => 'Unknown error');
-				console.error(`❌ Failed to load guest data (${response.status} ${response.statusText}):`, errorText);
-				console.warn('⚠️ Will use API search as fallback');
+				console.warn('⚠️ Guest data load returned no data:', data.error || 'Unknown error');
 			}
 		} catch (error) {
 			console.error('❌ Error loading guest data:', error);
@@ -592,104 +648,26 @@ END:VCALENDAR`;
 		}
 	};
 	
-	// Function to show all guest data (using already loaded data)
-	const loadAllGuestData = async () => {
+	// Function to show all guest data (using already loaded data - instant!)
+	const loadAllGuestData = () => {
 		console.log('🚀 loadAllGuestData called');
 		console.log(`Using existing guest data: ${allGuestData.length} guests`);
 		
-		isLoadingAllGuests = true;
-		
-		// Always fetch fresh data from API to get latest response status
-		try {
-			const url = `${GOOGLE_SCRIPT_URL}?action=getAllGuestData`;
-			console.log('Fetching guest data with response status from:', url);
-			
-			const response = await fetch(url, {
-				method: 'GET',
-				mode: 'cors'
-			});
-			
-			console.log('Response status:', response.status);
-			
-			if (response.ok) {
-				const responseText = await response.text();
-				console.log('Response received, length:', responseText.length);
-				console.log('Response text preview:', responseText.substring(0, 200));
-				
-				const data = JSON.parse(responseText);
-				console.log('Parsed data:', { success: data.success, guestCount: data.guests?.length, error: data.error });
-				
-				if (data.success && data.guests && data.guests.length > 0) {
-					allGuestDataWithStatus = data.guests;
-					console.log(`✅ Loaded ${data.guests.length} guests with response status`);
-					
-					// Log response status breakdown
-					const responded = data.guests.filter((g: {submitted: string | null}) => g.submitted).length;
-					const notResponded = data.guests.filter((g: {submitted: string | null}) => !g.submitted).length;
-					const attending = data.guests.filter((g: {attending: boolean}) => g.attending).length;
-					console.log(`📊 Response breakdown: ${responded} responded, ${notResponded} no response, ${attending} attending`);
-					
-					// Log a few sample guests to verify data structure
-					if (data.guests.length > 0) {
-						console.log('Sample guest data:', data.guests.slice(0, 3));
-					}
-				} else {
-					console.error('❌ No guest data in response:', data);
-					if (data.error) {
-						console.error('Error message:', data.error);
-						if (data.error.includes('getAllGuestData')) {
-							console.error('⚠️ The Google Apps Script needs to be redeployed with the getAllGuestData function!');
-						}
-					}
-					// Fallback: use local data without status
-					if (allGuestData.length > 0) {
-						allGuestDataWithStatus = allGuestData.map(guest => ({
-							name: guest.name,
-							familyId: guest.familyId,
-							attending: false,
-							submitted: null
-						}));
-					}
-				}
-			} else {
-				const errorText = await response.text().catch(() => 'Unknown error');
-				console.error(`❌ API error (${response.status}):`, errorText);
-				// Fallback: use local data
-				if (allGuestData.length > 0) {
-					allGuestDataWithStatus = allGuestData.map(guest => ({
-						name: guest.name,
-						familyId: guest.familyId,
-						attending: false,
-						submitted: null
-					}));
-				}
-			}
-		} catch (error) {
-			console.error('❌ Error fetching guest data:', error);
-			// Fallback: use local data
-			if (allGuestData.length > 0) {
-				allGuestDataWithStatus = allGuestData.map(guest => ({
-					name: guest.name,
-					familyId: guest.familyId,
-					attending: false,
-					submitted: null
-				}));
-			}
-		} finally {
-			isLoadingAllGuests = false;
+		// Show modal immediately with cached data (already has status from initial load!)
+		// If status data isn't loaded yet, show pending
+		if (allGuestDataWithStatus.length === 0 && allGuestData.length > 0) {
+			allGuestDataWithStatus = allGuestData.map(guest => ({
+				name: guest.name,
+				familyId: guest.familyId,
+				attending: false,
+				submitted: null
+			}));
 		}
 		
 		showAllGuests = true;
 		// Prevent body scroll when modal is open
 		document.body.style.overflow = 'hidden';
 	};
-	
-	// Cleanup: restore body scroll when modal closes
-	$effect(() => {
-		if (!showAllGuests) {
-			document.body.style.overflow = '';
-		}
-	});
 </script>
 
 <div class="min-h-screen" style="background-color: #FFFFFF;">
@@ -1058,27 +1036,25 @@ END:VCALENDAR`;
 								</p>
 							</div>
 							
-							<div class="space-y-4">
+							<div class="space-y-8">
 								{#each Object.entries(groupedByFamily) as [familyId, guests]}
-									<div class="pb-4 border-b-2" style="border-color: rgba(74, 82, 48, 0.2);">
+									<div class="pb-6 border-b-2" style="border-color: rgba(74, 82, 48, 0.2);">
 										<div class="space-y-2">
 											{#each guests as guest}
 												<div class="flex items-center justify-between py-2">
 													<span class="text-lg font-medium" style="color: #4A5230;">{guest.name}</span>
 													<div class="flex items-center gap-2">
-														{#if guest.submitted}
-															{#if guest.attending}
-																<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #4CAF50; color: white;">
-																	✓ Attending
-																</span>
-															{:else}
-																<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #F44336; color: white;">
-																	✗ Not Attending
-																</span>
-															{/if}
+														{#if guest.attending}
+															<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #4CAF50; color: white;">
+																✓ Attending
+															</span>
+														{:else if guest.submitted}
+															<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #F44336; color: white;">
+																✗ Not Attending
+															</span>
 														{:else}
 															<span class="px-3 py-1 rounded-full text-sm font-semibold" style="background-color: #9E9E9E; color: white;">
-																No Response
+																Pending
 															</span>
 														{/if}
 													</div>
@@ -1103,7 +1079,7 @@ END:VCALENDAR`;
 								</button>
 							</div>
 						{/if}
-				</div>
+					</div>
 				</div>
 			{/if}
 		</div>
