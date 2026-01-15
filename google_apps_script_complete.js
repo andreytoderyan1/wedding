@@ -85,17 +85,17 @@ function searchFamily(searchName) {
     const searchFirstName = searchParts[0] || '';
     const searchLastName = searchParts.length > 1 ? searchParts.slice(1).join(' ') : '';
     
-    // Require both first and last name
-    if (!searchFirstName || !searchLastName) {
+    // Require first name, and at least some characters for last name (can be partial)
+    if (!searchFirstName || !searchLastName || searchLastName.length < 1) {
       return ContentService
         .createTextOutput(JSON.stringify({ 
           success: false, 
-          error: 'Please enter both first and last name' 
+          error: 'Please enter your first name and at least part of your last name' 
         }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     
-    // Find matching person - strict first name and last name matching
+    // Find matching person - exact first name match, partial last name match (starts with)
     // Optimized for speed: minimize string operations
     let foundRowIndex = -1;
     let foundFamilyId = null;
@@ -103,7 +103,7 @@ function searchFamily(searchName) {
     // Pre-normalize search terms once
     const searchFirstNameLower = searchFirstName.toLowerCase();
     const searchLastNameLower = searchLastName.toLowerCase();
-    const searchLen = searchFirstNameLower.length + searchLastNameLower.length;
+    const minSearchLen = searchFirstNameLower.length + searchLastNameLower.length;
     
     for (let i = 1; i < data.length; i++) {
       // Skip completely empty rows
@@ -116,7 +116,7 @@ function searchFamily(searchName) {
       
       // Quick length check before expensive operations
       const nameStr = String(rawName).trim();
-      if (!nameStr || nameStr.length < searchLen) continue;
+      if (!nameStr || nameStr.length < minSearchLen) continue;
       
       // Normalize efficiently
       const rowName = nameStr.toLowerCase();
@@ -127,14 +127,14 @@ function searchFamily(searchName) {
       
       const rowFirstName = rowName.substring(0, spaceIndex);
       
-      // Early exit if first name doesn't match
+      // Early exit if first name doesn't match exactly
       if (rowFirstName !== searchFirstNameLower) continue;
       
       // Get last name (everything after first space)
       const rowLastName = rowName.substring(spaceIndex + 1).trim();
       
-      // Final check: last name must match
-      if (rowLastName === searchLastNameLower) {
+      // Final check: last name must start with the search term (partial match allowed)
+      if (rowLastName.startsWith(searchLastNameLower)) {
         foundRowIndex = i;
         const rawFamilyId = row[familyIdColIndex];
         foundFamilyId = rawFamilyId ? String(rawFamilyId).trim() : null;

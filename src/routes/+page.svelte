@@ -204,7 +204,7 @@ END:VCALENDAR`;
 		// Remove all leading and trailing whitespace
 		const trimmedName = name.trim();
 		
-		// Require both first and last name
+		// Require first name and at least part of last name
 		const nameParts = trimmedName.split(/\s+/).filter(part => part.length > 0);
 		if (!trimmedName || nameParts.length < 2) {
 			if (showResults) {
@@ -213,7 +213,7 @@ END:VCALENDAR`;
 				selectedAttendees.clear();
 				isCheckingRSVP = false;
 				if (trimmedName && nameParts.length === 1) {
-					formError = 'Please enter both first and last name';
+					formError = 'Please enter your first name and at least part of your last name';
 				} else {
 					formError = '';
 				}
@@ -421,7 +421,7 @@ END:VCALENDAR`;
 		const searchFirstName = nameParts[0].toLowerCase();
 		const searchLastName = nameParts.slice(1).join(' ').toLowerCase();
 
-		// Find matching person
+		// Find matching person - exact first name, partial last name (starts with)
 		let foundFamilyId: string | null = null;
 		
 		for (const guest of allGuestData) {
@@ -433,7 +433,8 @@ END:VCALENDAR`;
 			const guestFirstName = guestName.substring(0, spaceIndex);
 			const guestLastName = guestName.substring(spaceIndex + 1).trim();
 			
-			if (guestFirstName === searchFirstName && guestLastName === searchLastName) {
+			// First name must match exactly, last name can be partial (starts with)
+			if (guestFirstName === searchFirstName && guestLastName.startsWith(searchLastName)) {
 				foundFamilyId = guest.familyId;
 				break;
 			}
@@ -472,14 +473,14 @@ END:VCALENDAR`;
 		const trimmedName = nameInput.trim();
 		
 		if (!trimmedName) {
-			formError = 'Please enter your FULL name';
+			formError = 'Please enter your first name and at least part of your last name';
 			return;
 		}
 
-		// Check if both first and last name are provided
+		// Check if both first name and at least part of last name are provided
 		const nameParts = trimmedName.split(/\s+/).filter(part => part.length > 0);
 		if (nameParts.length < 2) {
-			formError = 'Please enter your FULL name (first and last name required)';
+			formError = 'Please enter your first name and at least part of your last name';
 			return;
 		}
 
@@ -747,7 +748,7 @@ END:VCALENDAR`;
 						<!-- Name Input -->
 						<div>
 							<label for="name-input" class="text-base font-semibold mb-3 block" style="color: #4A5230;">
-								Enter your FULL name to find your family
+								Enter your first name and last name (or part of it) to find your family
 							</label>
 							<div class="flex gap-3">
 								<div class="flex-1">
@@ -758,7 +759,7 @@ END:VCALENDAR`;
 										oninput={handleNameInput}
 										class="w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all text-base focus:ring-2"
 										style="border-color: {formError ? '#d32f2f' : 'rgba(74, 82, 48, 0.3)'}; background-color: rgba(74, 82, 48, 0.05); color: #4A5230; --tw-ring-color: rgba(74, 82, 48, 0.2);"
-										placeholder="Enter first and last name (e.g., John Smith)"
+										placeholder="Enter first name and last name (e.g., John Sm or John Smith)"
 									/>
 									{#if isCheckingRSVP}
 										<div class="flex items-center gap-2 mt-2">
