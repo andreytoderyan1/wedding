@@ -29,7 +29,7 @@ function doGet(e) {
     return ContentService
       .createTextOutput(JSON.stringify({ 
         success: false, 
-        error: 'Invalid request. Use action=getAllGuests or action=search&name=...'
+        error: 'Invalid request. Use action=getAllGuests, action=getAllGuestData, or action=search&name=...'
       }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
@@ -374,6 +374,9 @@ function getAllGuestData() {
     
     // Get all guests with their attendance status
     const guests = [];
+    let attendingCount = 0;
+    let submittedCount = 0;
+    
     for (let i = 1; i < data.length; i++) {
       // Skip completely empty rows
       const row = data[i];
@@ -390,15 +393,38 @@ function getAllGuestData() {
       
       // Only include rows with both name and family ID (after trimming)
       if (name && familyId) {
-        const attending = attendingColIndex !== -1 ? row[attendingColIndex] : null;
-        const submitted = submittedColIndex !== -1 ? row[submittedColIndex] : null;
+        const attendingRaw = attendingColIndex !== -1 ? row[attendingColIndex] : null;
+        const submittedRaw = submittedColIndex !== -1 ? row[submittedColIndex] : null;
+        
+        // Parse attending value - handle boolean, string, and number formats
+        let attending = false;
+        if (attendingRaw !== null && attendingRaw !== undefined && attendingRaw !== '') {
+          const attendingStr = String(attendingRaw).trim().toUpperCase();
+          attending = attendingStr === 'TRUE' || attendingStr === '1' || attendingRaw === true || attendingRaw === 1;
+          if (attending) attendingCount++;
+        }
+        
+        // Parse submitted timestamp - convert to ISO string if present
+        let submitted = null;
+        if (submittedRaw !== null && submittedRaw !== undefined && submittedRaw !== '') {
+          try {
+            const submittedDate = new Date(submittedRaw);
+            if (!isNaN(submittedDate.getTime())) {
+              submitted = submittedDate.toISOString();
+              submittedCount++;
+            }
+          } catch (e) {
+            // If date parsing fails, leave as null
+            submitted = null;
+          }
+        }
         
         guests.push({
           name: name,
           familyId: familyId,
           rowIndex: i + 1, // 1-based row index for Google Sheets
-          attending: attending === true || attending === 'TRUE',
-          submitted: submitted ? new Date(submitted).toISOString() : null
+          attending: attending,
+          submitted: submitted
         });
       }
     }
@@ -406,7 +432,12 @@ function getAllGuestData() {
     return ContentService
       .createTextOutput(JSON.stringify({ 
         success: true, 
-        guests: guests 
+        guests: guests,
+        stats: {
+          total: guests.length,
+          attending: attendingCount,
+          responded: submittedCount
+        }
       }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {

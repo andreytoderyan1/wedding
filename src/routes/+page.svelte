@@ -614,9 +614,10 @@ END:VCALENDAR`;
 			if (response.ok) {
 				const responseText = await response.text();
 				console.log('Response received, length:', responseText.length);
+				console.log('Response text preview:', responseText.substring(0, 200));
 				
 				const data = JSON.parse(responseText);
-				console.log('Parsed data:', { success: data.success, guestCount: data.guests?.length });
+				console.log('Parsed data:', { success: data.success, guestCount: data.guests?.length, error: data.error });
 				
 				if (data.success && data.guests && data.guests.length > 0) {
 					allGuestDataWithStatus = data.guests;
@@ -627,8 +628,19 @@ END:VCALENDAR`;
 					const notResponded = data.guests.filter((g: {submitted: string | null}) => !g.submitted).length;
 					const attending = data.guests.filter((g: {attending: boolean}) => g.attending).length;
 					console.log(`📊 Response breakdown: ${responded} responded, ${notResponded} no response, ${attending} attending`);
+					
+					// Log a few sample guests to verify data structure
+					if (data.guests.length > 0) {
+						console.log('Sample guest data:', data.guests.slice(0, 3));
+					}
 				} else {
 					console.error('❌ No guest data in response:', data);
+					if (data.error) {
+						console.error('Error message:', data.error);
+						if (data.error.includes('getAllGuestData')) {
+							console.error('⚠️ The Google Apps Script needs to be redeployed with the getAllGuestData function!');
+						}
+					}
 					// Fallback: use local data without status
 					if (allGuestData.length > 0) {
 						allGuestDataWithStatus = allGuestData.map(guest => ({
