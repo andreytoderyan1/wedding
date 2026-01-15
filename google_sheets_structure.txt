@@ -1,0 +1,45 @@
+GOOGLE SHEETS STRUCTURE
+=======================
+
+Required Columns (in this exact order):
+
+Column A: Name
+- Full name of each guest
+- Example: "John Smith", "Jane Smith", "Alice Smith"
+
+Column B: Family ID  
+- Unique identifier for each family
+- All members of the same family must have the SAME Family ID
+- Example: "SMITH", "JOHNSON", "FAMILY001"
+- Case-sensitive (must match exactly)
+
+Column C: Attending
+- Leave empty initially (will be auto-filled by RSVP system)
+- Will contain TRUE/FALSE after guests submit RSVPs
+- Can also use checkboxes in Google Sheets
+
+Column D: Submitted
+- Leave empty initially (will be auto-filled by RSVP system)
+- Will contain timestamp (date and time) when RSVP was submitted
+- Example: "2025-01-15 14:30:00"
+- Same timestamp for all family members in the same submission
+
+EXAMPLE STRUCTURE:
+------------------
+Name          | Family ID | Attending | Submitted
+--------------|-----------|-----------|----------
+John Smith    | SMITH     |           | 
+Jane Smith    | SMITH     |           | 
+Alice Smith   | SMITH     |           | 
+Bob Johnson   | JOHNSON   |           | 
+Carol Johnson | JOHNSON   |           | 
+
+IMPORTANT NOTES:
+----------------
+1. Column headers MUST be exactly: "Name", "Family ID", "Attending", "Submitted"
+2. Family ID is case-sensitive - "SMITH" ≠ "smith"
+3. All family members must have the SAME Family ID
+4. Leave "Attending" and "Submitted" columns empty - they will be filled automatically
+5. The "Submitted" column will show when the RSVP was submitted (same timestamp for all family members)
+6. You can add more columns (like Email, Phone, etc.) but these 4 are required
+

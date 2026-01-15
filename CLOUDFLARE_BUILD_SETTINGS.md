@@ -25,3 +25,5 @@ Go to your Cloudflare Pages project settings and update:
 
 The build should now complete in ~30-60 seconds instead of hanging forever!
 
+
+

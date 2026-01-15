@@ -1,11 +1,39 @@
 <script lang="ts">
 	import { Plus, X, Copy, Check, Calendar, Gift } from '@lucide/svelte';
+	import { onMount } from 'svelte';
 
-	let names = $state(['']);
+	interface FamilyMember {
+		name: string;
+		familyId: string;
+		rowIndex: number;
+	}
+
+	interface GuestData {
+		name: string;
+		familyId: string;
+		rowIndex: number;
+	}
+
+	let nameInput = $state('');
 	let submitted = $state(false);
 	let addressCopied = $state(false);
 	let submittedNames = $state<string[]>([]);
-	let formErrors = $state<Record<number, string>>({});
+	let formError = $state<string>('');
+	let familyMembers = $state<FamilyMember[]>([]);
+	let selectedAttendees = $state<Set<number>>(new Set());
+	let isLoadingFamily = $state(false);
+	let familyFound = $state(false);
+	let searchResultsReady = $state(false);
+	let pendingFamilyMembers = $state<FamilyMember[]>([]);
+	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+	let isCheckingRSVP = $state(false);
+	let isLoadingGuestData = $state(true);
+	
+	// Local storage of all guest data (loaded once on page load)
+	let allGuestData = $state<GuestData[]>([]);
+	
+	// Cache for search results (key: normalized name, value: family members)
+	const searchCache = new Map<string, FamilyMember[]>();
 	
 	// Event details
 	const eventDate = '2025-07-05';
@@ -19,6 +47,30 @@
 	
 	// Google Apps Script URL for form submissions
 	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-B5eHWQ-hT0ev2l69i_B1dBmr_j7CQl72qaBB5g3UwhVgdhlnF-W-epSf2WkZqcPNJA/exec';
+
+	// Load all guest data on page mount
+	onMount(async () => {
+		try {
+			const startTime = performance.now();
+			const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllGuests`, {
+				method: 'GET'
+			});
+
+			if (response.ok) {
+				const data = await response.json() as { success?: boolean; guests?: GuestData[] };
+				if (data.success && data.guests) {
+					allGuestData = data.guests;
+					const loadTime = performance.now() - startTime;
+					console.log(`Loaded ${data.guests.length} guests in ${loadTime.toFixed(0)}ms`);
+				}
+			}
+		} catch (error) {
+			console.error('Failed to load guest data:', error);
+			// Continue anyway - will fall back to API search
+		} finally {
+			isLoadingGuestData = false;
+		}
+	});
 
 	const copyAddress = async () => {
 		try {
@@ -106,33 +158,335 @@ END:VCALENDAR`;
 		URL.revokeObjectURL(url);
 	};
 
-	const addPerson = () => {
-		names = [...names, ''];
-	};
-
-	const removePerson = (index: number) => {
-		if (names.length > 1) {
-			names = names.filter((_, i) => i !== index);
-		}
-	};
-
-	const handleSubmit = (e: Event) => {
-		e.preventDefault();
+	const searchFamily = async (name: string, showResults: boolean = true) => {
+		// Remove all leading and trailing whitespace
+		const trimmedName = name.trim();
 		
-		// Filter out empty strings and trim whitespace
-		const validNames = names.filter(name => name.trim() !== '');
-		
-		// Don't submit if no valid names
-		if (validNames.length === 0) {
+		// Require both first and last name
+		const nameParts = trimmedName.split(/\s+/).filter(part => part.length > 0);
+		if (!trimmedName || nameParts.length < 2) {
+			if (showResults) {
+				familyMembers = [];
+				familyFound = false;
+				selectedAttendees.clear();
+				isCheckingRSVP = false;
+				if (trimmedName && nameParts.length === 1) {
+					formError = 'Please enter both first and last name';
+				} else {
+					formError = '';
+				}
+			} else {
+				searchResultsReady = false;
+				pendingFamilyMembers = [];
+			}
 			return;
 		}
+
+		// Normalize name for cache key (lowercase, single spaces)
+		const cacheKey = trimmedName.toLowerCase().replace(/\s+/g, ' ').trim();
 		
-		const formData = {
-			names: validNames
-		};
+		// Check cache first (instant)
+		const cachedResult = searchCache.get(cacheKey);
+		if (cachedResult) {
+			// Use cached result immediately
+			if (showResults) {
+				familyMembers = cachedResult;
+				familyFound = true;
+				selectedAttendees = new Set(familyMembers.map(m => m.rowIndex));
+				formError = '';
+				isCheckingRSVP = false; // Clear loading immediately
+			} else {
+				pendingFamilyMembers = cachedResult;
+				searchResultsReady = true;
+			}
+			return;
+		}
+
+		// If guest data is loaded, search locally (instant, synchronous!)
+		if (allGuestData.length > 0) {
+			const searchStart = performance.now();
+			const result = searchLocal(trimmedName);
+			const searchTime = performance.now() - searchStart;
+			console.log(`Local search took ${searchTime.toFixed(2)}ms`);
+			
+			if (result) {
+				// Cache the result
+				searchCache.set(cacheKey, result);
+				
+				if (showResults) {
+					familyMembers = result;
+					familyFound = true;
+					selectedAttendees = new Set(familyMembers.map(m => m.rowIndex));
+					formError = '';
+					isCheckingRSVP = false; // Clear loading immediately
+				} else {
+					pendingFamilyMembers = result;
+					searchResultsReady = true;
+				}
+				return;
+			} else {
+				// Not found locally
+				if (showResults) {
+					familyMembers = [];
+					familyFound = false;
+					selectedAttendees.clear();
+					formError = 'Name not found. Please check your spelling or contact us.';
+					isCheckingRSVP = false; // Clear loading immediately
+				} else {
+					searchResultsReady = false;
+					pendingFamilyMembers = [];
+				}
+				return;
+			}
+		}
+
+		// Fallback to API search if local data not loaded yet
+		isLoadingFamily = true;
+		if (showResults) {
+			formError = '';
+		}
 		
+		try {
+			// Call Google Apps Script to search for family (using GET)
+			const url = `${GOOGLE_SCRIPT_URL}?action=search&name=${encodeURIComponent(trimmedName)}`;
+			
+			const response = await fetch(url, {
+				method: 'GET',
+				cache: 'no-cache'
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text().catch(() => 'Unknown error');
+				console.error('Response error:', response.status, errorText);
+				throw new Error(`Failed to search: ${response.status}`);
+			}
+
+			const responseText = await response.text();
+			
+			let data: { success?: boolean; family?: FamilyMember[]; error?: string };
+			try {
+				data = JSON.parse(responseText);
+			} catch (parseError) {
+				console.error('JSON parse error:', parseError, 'Response:', responseText);
+				throw new Error('Invalid response from server');
+			}
+			
+			if (data.success && data.family && data.family.length > 0) {
+				searchCache.set(cacheKey, data.family);
+				
+				if (showResults) {
+					familyMembers = data.family;
+					familyFound = true;
+					selectedAttendees = new Set(familyMembers.map(m => m.rowIndex));
+					formError = '';
+				} else {
+					pendingFamilyMembers = data.family;
+					searchResultsReady = true;
+				}
+			} else {
+				if (showResults) {
+					familyMembers = [];
+					familyFound = false;
+					selectedAttendees.clear();
+					formError = data.error || 'Name not found. Please check your spelling or contact us.';
+				} else {
+					searchResultsReady = false;
+					pendingFamilyMembers = [];
+				}
+			}
+		} catch (error) {
+			console.error('Error searching for family:', error);
+			if (showResults) {
+				if (error instanceof TypeError) {
+					if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+						formError = `Connection error. Please check:\n1. Your internet connection\n2. The Google Apps Script URL is correct\n3. The script is deployed with "Anyone" access\n\nError: ${error.message}`;
+					} else {
+						formError = `Error: ${error.message}. Please check the browser console for details.`;
+					}
+				} else if (error instanceof Error) {
+					formError = `Error: ${error.message}`;
+				} else {
+					formError = 'Unable to search for your family. Please check the browser console (F12) for details.';
+				}
+				familyMembers = [];
+				familyFound = false;
+				selectedAttendees.clear();
+			} else {
+				searchResultsReady = false;
+				pendingFamilyMembers = [];
+			}
+		} finally {
+			isLoadingFamily = false;
+		}
+	};
+
+	const handleNameInput = () => {
+		// Trim whitespace from input value (remove leading and trailing spaces)
+		nameInput = nameInput.trimStart();
+		
+		// Clear previous timeout
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+		}
+		
+		// Clear error and loading state when user starts typing
+		if (formError) {
+			formError = '';
+		}
+		isCheckingRSVP = false;
+
+		// If input is cleared, reset state
+		const trimmedInput = nameInput.trim();
+		if (!trimmedInput) {
+			familyMembers = [];
+			familyFound = false;
+			searchResultsReady = false;
+			pendingFamilyMembers = [];
+			selectedAttendees.clear();
+			return;
+		}
+
+		// Reset family found state when user types (hide previous results)
+		if (familyFound) {
+			familyMembers = [];
+			familyFound = false;
+			searchResultsReady = false;
+			pendingFamilyMembers = [];
+			selectedAttendees.clear();
+		}
+
+		// Check if both first and last name are provided
+		const nameParts = trimmedInput.split(/\s+/).filter(part => part.length > 0);
+		if (nameParts.length < 2) {
+			// Don't search yet if only first name
+			searchResultsReady = false;
+			pendingFamilyMembers = [];
+			return;
+		}
+
+		// Search automatically in background (debounced) - but don't show results yet
+		searchTimeout = setTimeout(() => {
+			searchFamily(trimmedInput, false); // false = don't show results yet
+		}, 50); // Minimal debounce for fastest response
+	};
+
+	// Local search function (instant, no API call)
+	const searchLocal = (name: string): FamilyMember[] | null => {
+		const trimmedName = name.trim();
+		const nameParts = trimmedName.split(/\s+/).filter(part => part.length > 0);
+		if (nameParts.length < 2) return null;
+
+		const searchFirstName = nameParts[0].toLowerCase();
+		const searchLastName = nameParts.slice(1).join(' ').toLowerCase();
+
+		// Find matching person
+		let foundFamilyId: string | null = null;
+		
+		for (const guest of allGuestData) {
+			const guestName = guest.name.toLowerCase();
+			const spaceIndex = guestName.indexOf(' ');
+			
+			if (spaceIndex === -1) continue;
+			
+			const guestFirstName = guestName.substring(0, spaceIndex);
+			const guestLastName = guestName.substring(spaceIndex + 1).trim();
+			
+			if (guestFirstName === searchFirstName && guestLastName === searchLastName) {
+				foundFamilyId = guest.familyId;
+				break;
+			}
+		}
+
+		if (!foundFamilyId) return null;
+
+		// Find all family members
+		const family: FamilyMember[] = [];
+		for (const guest of allGuestData) {
+			if (guest.familyId === foundFamilyId) {
+				family.push({
+					name: guest.name,
+					familyId: guest.familyId,
+					rowIndex: guest.rowIndex
+				});
+			}
+		}
+
+		return family.length > 0 ? family : null;
+	};
+
+	const toggleAttendee = (rowIndex: number) => {
+		if (selectedAttendees.has(rowIndex)) {
+			selectedAttendees.delete(rowIndex);
+		} else {
+			selectedAttendees.add(rowIndex);
+		}
+		// Trigger reactivity
+		selectedAttendees = new Set(selectedAttendees);
+	};
+
+	const handleSubmit = async (e: Event) => {
+		e.preventDefault();
+		
+		const trimmedName = nameInput.trim();
+		
+		if (!trimmedName) {
+			formError = 'Please enter your FULL name';
+			return;
+		}
+
+		// Check if both first and last name are provided
+		const nameParts = trimmedName.split(/\s+/).filter(part => part.length > 0);
+		if (nameParts.length < 2) {
+			formError = 'Please enter your FULL name (first and last name required)';
+			return;
+		}
+
+		// If family already shown, check if attendees are selected for submission
+		if (familyFound && familyMembers.length > 0) {
+			if (selectedAttendees.size === 0) {
+				formError = 'Please select at least one attendee';
+				return;
+			}
+			// Proceed to submission (continue with rest of function)
+			isCheckingRSVP = false; // Not checking, submitting
+		} else {
+			// This is "Check RSVP"
+			
+			// If results are ready from background search, show them now (instant)
+			if (searchResultsReady && pendingFamilyMembers.length > 0) {
+				familyMembers = pendingFamilyMembers;
+				familyFound = true;
+				selectedAttendees = new Set(familyMembers.map(m => m.rowIndex));
+				searchResultsReady = false;
+				pendingFamilyMembers = [];
+				formError = '';
+				return; // Show results, wait for them to select and submit again
+			}
+
+			// No results ready, trigger search now
+			// Only show loading if we need to make an API call
+			if (allGuestData.length === 0) {
+				isCheckingRSVP = true; // Only show loading for API calls
+			}
+			
+			await searchFamily(trimmedName, true);
+			isCheckingRSVP = false;
+			
+			// After search, check again if family was found
+			if (!familyFound || familyMembers.length === 0) {
+				return; // Error already shown by searchFamily
+			}
+			// Family found, wait for them to select attendees
+			return;
+		}
+
+		// Get names of selected attendees
+		const attendingNames = familyMembers
+			.filter(member => selectedAttendees.has(member.rowIndex))
+			.map(member => member.name);
+
 		// Store submitted names for personalization
-		submittedNames = formData.names.map(name => {
+		submittedNames = attendingNames.map(name => {
 			// Extract first name (everything before first space)
 			const firstName = name.trim().split(' ')[0];
 			return firstName;
@@ -140,13 +494,27 @@ END:VCALENDAR`;
 		
 		// Show thank you message immediately
 		submitted = true;
+		formError = '';
 		
 		// Check for "bruh" in any name (case-insensitive) - don't submit to Google Sheets if found
-		const hasBruh = validNames.some(name => name.toLowerCase().includes('bruh'));
+		const hasBruh = attendingNames.some(name => name.toLowerCase().includes('bruh'));
 		if (hasBruh) {
 			// Skip submission to Google Sheets, but still show thank you message
 			return;
 		}
+		
+		// Prepare data for submission
+		const formData = {
+			action: 'updateAttendance',
+			attendees: Array.from(selectedAttendees).map(rowIndex => {
+				const member = familyMembers.find(m => m.rowIndex === rowIndex);
+				return {
+					rowIndex: rowIndex,
+					name: member?.name || '',
+					attending: true
+				};
+			})
+		};
 		
 		// Submit in the background (fire and forget)
 		if (GOOGLE_SCRIPT_URL) {
@@ -334,75 +702,96 @@ END:VCALENDAR`;
 				<!-- Form Content -->
 				<div class=" backdrop-blur-sm rounded-2xl p-8">
 					<form onsubmit={handleSubmit} class="space-y-6" novalidate>
-					{#each names as name, index}
+						<!-- Name Input -->
 						<div>
-							<label for="name-{index}" class="text-base font-semibold mb-3 block" style="color: #4A5230;">
-								 {#if index === 0}<span style="color: #4A5230; opacity: 0.6;"></span>{/if}
+							<label for="name-input" class="text-base font-semibold mb-3 block" style="color: #4A5230;">
+								Enter your FULL name to find your family
 							</label>
 							<div class="flex gap-3">
 								<div class="flex-1">
 									<input
-										id="name-{index}"
+										id="name-input"
 										type="text"
-										bind:value={names[index]}
-										onblur={() => {
-											if (index === 0 && !names[index].trim()) {
-												formErrors[index] = 'Please enter your name';
-											} else {
-												delete formErrors[index];
-											}
-										}}
-										oninput={() => {
-											if (formErrors[index]) {
-												delete formErrors[index];
-											}
-										}}
+										bind:value={nameInput}
+										oninput={handleNameInput}
 										class="w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all text-base focus:ring-2"
-										style="border-color: {formErrors[index] ? '#4A5230' : 'rgba(74, 82, 48, 0.3)'}; background-color: rgba(74, 82, 48, 0.05); color: #4A5230; --tw-ring-color: rgba(74, 82, 48, 0.2);"
-										placeholder="Enter full name"
+										style="border-color: {formError ? '#d32f2f' : 'rgba(74, 82, 48, 0.3)'}; background-color: rgba(74, 82, 48, 0.05); color: #4A5230; --tw-ring-color: rgba(74, 82, 48, 0.2);"
+										placeholder="Enter first and last name (e.g., John Smith)"
 									/>
-									{#if formErrors[index]}
-										<p class="text-sm mt-2 font-light" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.8;">
-											{formErrors[index]}
+									{#if isCheckingRSVP}
+										<div class="flex items-center gap-2 mt-2">
+											<div class="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin" style="border-color: #4A5230;"></div>
+											<p class="text-sm font-light" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.8;">
+												Searching for your family...
+											</p>
+										</div>
+									{/if}
+									{#if formError}
+										<p class="text-sm mt-2 font-light" style="font-family: 'Inter', sans-serif; color: #d32f2f;">
+											{formError}
 										</p>
 									{/if}
 								</div>
-								{#if names.length > 1}
-									<button
-										type="button"
-										onclick={() => removePerson(index)}
-										class="px-4 py-3 border-2 rounded-xl transition-all hover:opacity-80"
-										style="background-color: rgba(74, 82, 48, 0.1); border-color: rgba(74, 82, 48, 0.3); color: #4A5230;"
-									>
-										<X class="h-5 w-5" style="color: #4A5230;" />
-									</button>
-								{/if}
 							</div>
 						</div>
-					{/each}
 
-					<!-- Add Person Button -->
-					<button
-						type="button"
-						onclick={addPerson}
-						class="w-full px-6 py-3 border-2 rounded-xl transition-all flex items-center justify-center gap-2 text-base font-semibold hover:opacity-80"
-						style="background-color: rgba(74, 82, 48, 0.1); border-color: rgba(74, 82, 48, 0.3); color: #4A5230;"
-					>
-						<Plus class="h-5 w-5" style="color: #4A5230;" />
-						Add Additional Person
-					</button>
+						<!-- Family Members Checkboxes -->
+						{#if familyFound && familyMembers.length > 0}
+							<div class="space-y-4 pt-4">
+								<p class="text-base font-semibold mb-4" style="color: #4A5230;">
+									Select who will be attending:
+								</p>
+								<div class="space-y-3">
+									{#each familyMembers as member}
+										<label class="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all hover:opacity-80"
+											style="background-color: rgba(74, 82, 48, 0.05); border: 2px solid {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'rgba(74, 82, 48, 0.2)'};">
+											<!-- Custom styled checkbox -->
+											<div 
+												class="relative flex items-center justify-center w-5 h-5 rounded border-2 transition-all cursor-pointer"
+												style="border-color: {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'rgba(74, 82, 48, 0.4)'}; background-color: {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'transparent'};"
+												role="checkbox"
+												aria-checked={selectedAttendees.has(member.rowIndex)}
+												tabindex="0"
+												onclick={() => toggleAttendee(member.rowIndex)}
+												onkeydown={(e) => {
+													if (e.key === 'Enter' || e.key === ' ') {
+														e.preventDefault();
+														toggleAttendee(member.rowIndex);
+													}
+												}}
+											>
+												{#if selectedAttendees.has(member.rowIndex)}
+													<Check class="h-3.5 w-3.5" style="color: #FFFFFF; stroke-width: 3;" />
+												{/if}
+											</div>
+											<input
+												type="checkbox"
+												checked={selectedAttendees.has(member.rowIndex)}
+												onchange={() => toggleAttendee(member.rowIndex)}
+												class="sr-only"
+												tabindex="-1"
+												aria-hidden="true"
+											/>
+											<span class="text-base font-medium flex-1" style="color: #4A5230;">
+												{member.name}
+											</span>
+										</label>
+									{/each}
+								</div>
+							</div>
+						{/if}
 
-					<!-- Submit Button -->
-					<div class="pt-6">
-						<button
-							type="submit"
-							class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2"
-							style="background-color: #4A5230; color: #FFFFFF;"
-						>
-							Submit RSVP
-						</button>
-					</div>
-				</form>
+						<!-- Submit Button -->
+						<div class="pt-6">
+							<button
+								type="submit"
+								class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2"
+								style="background-color: #4A5230; color: #FFFFFF;"
+							>
+								{familyFound ? 'Submit RSVP' : 'Check RSVP'}
+							</button>
+						</div>
+					</form>
 				
 				<!-- Registry Button -->
 				<div class="pt-6">
@@ -413,8 +802,8 @@ END:VCALENDAR`;
 								window.open(registryUrl, '_blank', 'noopener,noreferrer');
 							}
 						}}
-						class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-						style="background-color: #4A5230; color: #FFFFFF;"
+						class="w-full px-8 py-4 rounded-2xl transition-all duration-200 text-lg font-bold hover:opacity-90 flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+						style="background-color: #4A5230; color: #FFFFFF; opacity: {!registryUrl ? 0.6 : 1};"
 					>
 						<Gift class="h-5 w-5 transition-colors" style="color: #FFFFFF;" />
 						<span>View Registry</span>
