@@ -45,8 +45,8 @@
 	const eventDate = '2025-07-05';
 	const eventTime = '15:00';
 	const eventTitle = 'Wedding Celebration';
-	const eventLocation = '29200 SE Larch Mountain Road, Corbett, Oregon 97019';
-	const fullAddress = '29200 SE Larch Mountain Road\nCorbett, Oregon 97019\nColumbia Gorge';
+	const eventLocation = '81 Woodard Creek Rd, Stevenson, WA 98648';
+	const fullAddress = '81 Woodard Creek Rd\nStevenson, WA\n98648';
 	
 	// Registry URL
 	const registryUrl = 'https://www.myregistry.com/wedding-registry/vita-vakulchik-and-andrey-toderyan-milwaukie-or/5051584';
@@ -513,7 +513,7 @@ END:VCALENDAR`;
 					familyId: guest.familyId,
 					rowIndex: guest.rowIndex
 				});
-			}
+		}
 		}
 
 		return family.length > 0 ? family : null;
@@ -1079,7 +1079,7 @@ END:VCALENDAR`;
 								</button>
 							</div>
 						{/if}
-					</div>
+				</div>
 				</div>
 			{/if}
 		</div>

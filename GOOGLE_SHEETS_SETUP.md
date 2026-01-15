@@ -244,7 +244,7 @@ function updateAttendance(attendees) {
    - Select type: **Web app**
    - Set:
      - Description: "RSVP Family Search and Update"
-     - Execute as: **Me**
+   - Execute as: **Me**
      - Who has access: **Anyone** ⚠️ **CRITICAL: Must be "Anyone" for CORS to work**
    - Click **Deploy**
    - **Copy the Web App URL** - you'll need this!
