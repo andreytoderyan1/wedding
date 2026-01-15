@@ -808,8 +808,8 @@ END:VCALENDAR`;
 								Cape Horn Estate
 							</p>
 							<div class="space-y-1 font-light tracking-wide leading-relaxed" style="font-family: 'Inter', sans-serif; color: #4A5230; opacity: 0.75;">
-								<p class="text-base">29200 SE Larch Mountain Rd</p>
-								<p class="text-base">Corbett, OR 97019</p>
+								<p class="text-base">81 Woodard Creek Rd</p>
+								<p class="text-base">Stevenson, WA 98648</p>
 							</div>
 						</button>
 					</div>
@@ -896,16 +896,24 @@ END:VCALENDAR`;
 								</p>
 								<div class="space-y-3">
 									{#each familyMembers as member}
-										<label class="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all hover:opacity-80"
-											style="background-color: rgba(74, 82, 48, 0.05); border: 2px solid {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'rgba(74, 82, 48, 0.2)'};">
+										<label 
+											class="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all hover:opacity-80"
+											style="background-color: rgba(74, 82, 48, 0.05); border: 2px solid {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'rgba(74, 82, 48, 0.2)'};"
+											onclick={() => toggleAttendee(member.rowIndex)}
+											onkeydown={(e) => {
+												if (e.key === 'Enter' || e.key === ' ') {
+													e.preventDefault();
+													toggleAttendee(member.rowIndex);
+												}
+											}}
+										>
 											<!-- Custom styled checkbox -->
 											<div 
-												class="relative flex items-center justify-center w-5 h-5 rounded border-2 transition-all cursor-pointer"
+												class="relative flex items-center justify-center w-5 h-5 rounded border-2 transition-all"
 												style="border-color: {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'rgba(74, 82, 48, 0.4)'}; background-color: {selectedAttendees.has(member.rowIndex) ? '#4A5230' : 'transparent'};"
 												role="checkbox"
 												aria-checked={selectedAttendees.has(member.rowIndex)}
 												tabindex="0"
-												onclick={() => toggleAttendee(member.rowIndex)}
 												onkeydown={(e) => {
 													if (e.key === 'Enter' || e.key === ' ') {
 														e.preventDefault();
